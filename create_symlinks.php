@@ -64,11 +64,12 @@ function get_accepted_rips($user_id) {
   
 }
 
-
 function get_existing_links($base_dir) {
 
   $dirs = array();
   $links = array();
+  $links['path']   = array();
+  $links['rip_id'] = array();
   
   /* Get a list of all dirs */
   $dirs[] = $base_dir;
@@ -89,8 +90,12 @@ function get_existing_links($base_dir) {
       }
       
       if ( is_link($item_path) ) {
-        $links['path'][] = $item_path;
-        $links['rip_id'][] = lookup_link($item_path);
+        if ( $rip_id = lookup_link($item_path) ) {
+          if ( ! in_array($rip_id, $links['rip_id']) ) {
+            $links['path'][] = dirname($item_path);
+            $links['rip_id'][] = $rip_id;
+          }
+        }
       } 
 
     }
@@ -105,11 +110,11 @@ function get_existing_links($base_dir) {
 
 function lookup_link($item_path) {
   
-  $name_regexp = "/^(\[.*\]) (\[.*\]) (\[.*\])$/";
+  $name_regexp = "/^.*(\[.*\]) (\[.*\]) (\[.*\])$/";
   
   $target = readlink($item_path);
   
-  if ( preg_match($name_regexp, $target, $matches) ) {
+  if ( preg_match($name_regexp, dirname($target), $matches) || preg_match($name_regexp, $target, $matches) ) {
     /* Remove the leading/trailing brackets from the names */
     foreach ($matches as $key => $value)
       $matches[$key] = trim($value, '[]');
