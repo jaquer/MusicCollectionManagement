@@ -239,7 +239,7 @@ function validate_login($user_name, $encoded_password) {
 
   $query = "SELECT user_id, user_password FROM mdb_user WHERE user_name = '$user_name'";
 
-  $row = get_row_q($query, FALSE);
+  $row = get_row_q($query);
 
   if ( $encoded_password == $row['user_password'] ) return $row['user_id'];
 
