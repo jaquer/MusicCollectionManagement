@@ -135,6 +135,14 @@ function lookup_rip_id($artist_id, $album_id, $rip_quality, $has_pun = FALSE, $h
   
 }
 
+function get_user_id($user_name) {
+  
+  $query = "SELECT user_id FROM mdb_user WHERE user_name = '$user_name'";
+  $row = get_row_q($query);
+  return $row['user_id'];
+  
+}
+
 function lookup_user($user_id) {
 
   $query = "SELECT * FROM mdb_user WHERE user_id = $user_id";

@@ -198,12 +198,5 @@ function update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_
 
 }
 
-function get_user_id($user_name) {
-  
-  $query = "SELECT user_id FROM mdb_user WHERE user_name = '$user_name'";
-  $row = get_row_q($query);
-  return $row['user_id'];
-  
-}
 
 ?>
