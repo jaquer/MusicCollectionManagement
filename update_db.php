@@ -83,7 +83,7 @@ if (is_dir($music_dir)) {
     $user_name  = $row['user_name'];
     $user_email = $row['user_email'];
 
-    $message = "Hello $user_name.\n\n"
+    $message = "Hello $user_name.\n\n";
     $message .= "This is a reminder that there are new albums to be reviewed since the last time you visited the site.\n\n";
     $message .= "Please stop by http://music.izaram.net to decide if you want these new albums added to your music directory.\n\n";
     $message .= "-- \n";
