@@ -33,7 +33,9 @@ if (is_dir($music_dir)) {
       $artist  = $matches[1];
       $album   = $matches[2];
       $quality = $matches[3];
-      
+      $has_pun = FALSE;
+      $has_log = FALSE;
+      $has_not_comp = FALSE;
       
       $path_handle = opendir($path);
       
