@@ -20,6 +20,17 @@ $limit = 30;
 $start  = (isset($_POST['start'])) ? $_POST['start'] : "0";
 $status = (isset($_POST['submit'])) ? $_POST['submit'] : "";
 
+if ( $status == "Finish" ) {
+ 
+  /* Completely wipe out the session */
+  $_SESSION = array();
+  if (isset($_COOKIE[session_name()])) {
+    setcookie(session_name(), '', time()-42000, '/');
+  }
+  session_destroy();
+
+}
+
 include('html_header.inc');
 
 if ( $user_name == "" ) {
@@ -190,13 +201,6 @@ function print_confirmation($user_id) {
 
   }
   
-  /* Completely wipe out the session */
-  $_SESSION = array();
-  if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time()-42000, '/');
-  }
-  session_destroy();
-
 ?>
     <p>The albums you have selected have been queued. They will appear on your collection shortly.</p>
     <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>">
