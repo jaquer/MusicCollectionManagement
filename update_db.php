@@ -15,7 +15,7 @@ $pun_regexp  = "/\.pun$/";
 $log_regexp  = "/\.log$/";
 $bad_regexp  = "/^--NOT COMPLIANT WITH STANDARD--\.txt$/";
 
-$prev_last_rip = lookup_last_rip;
+$prev_last_rip = lookup_last_rip();
 
 if (is_dir($music_dir)) {
 
@@ -65,7 +65,7 @@ if (is_dir($music_dir)) {
   closedir($base_handle);
 
   $new_last_rip = lookup_last_rip();
-
+  
   if ( $prev_last_rip != $new_last_rip ) {
 
     /* Notify users of updates */
