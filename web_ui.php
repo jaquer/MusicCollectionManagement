@@ -39,7 +39,7 @@ if ( $user_name == "" ) {
 
   switch($status) {
     case "Finish":
-      /* print_confirmation(); */
+      print_confirmation($user_id);
       break;
     default:
       print_rips_list($user_id, $start, $status);
@@ -161,7 +161,7 @@ function print_rips_list($user_id, $start, $status) {
           <td<?= ($row['rip_quality'] == "APX") ? ' class="flag"' : ""; ?>><?= $row['rip_quality']; ?></td>
           <td><?= ( $row['rip_flags'] != "" ) ? $row['rip_flags'] : "&nbsp;"; ?></td>
           <td><?= $row['rip_added']; ?></td>
-          <td><a href="<?= "/zina/index.php?p=[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]&l=8&m=0"; ?>">Go</a></td>
+          <td><a href="<?= "/zina/index.php?p=[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]&l=8&m=0"; ?>">Play</a></td>
         </tr>
 <?php
   }
@@ -170,6 +170,33 @@ function print_rips_list($user_id, $start, $status) {
       <p><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?> <?= ($start + $limit <= $num_rips) ? '<input type="submit" name="submit" value="Next">' : '' ?></p>
       <p><input type="submit" name="submit" value="Finish"></p>
 <?php
+}
+
+function print_confirmation($user_id) {
+
+  foreach ( $_POST as $key => $value ) {
+    
+    $rip_id = str_replace("id", "", $key);
+    $query = "";
+    if ( $value == "accepted" ) {
+      $query = "INSERT INTO mdb_reviewed (user_id, rip_id, rip_status) VALUES ($user_id, $rip_id, 1)";
+      echo "    <!-- id $rip_id was added -->\n";
+    } elseif ( $value == "rejected" ) {
+      $query = "INSERT INTO mdb_reviewed (user_id, rip_id, rip_status) VALUES ($user_id, $rip_id, 0)";
+      echo "    <!-- id $rip_id was removed -->\n";
+    }
+
+    if ( $query !== "") do_query($query);
+
+  }
+
+?>
+    <p>The albums you have selected have been queued. They will appear on your collection shortly.</p>
+    <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>">
+      <input type="submit" name="finished" value="Click here to finish process">
+    </form>
+<?php
+  
 }
 
 function print_checkbox($id, $value) {
