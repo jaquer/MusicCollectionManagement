@@ -21,7 +21,7 @@ if (is_dir($music_dir)) {
   
   /* Loop through each subdir */
   while ($dir = readdir($base_handle)) {
-    
+
     $path = $music_dir . "/" . $dir;
     
     if (is_dir($path) && preg_match($name_regexp, $dir, $matches)) {
@@ -53,12 +53,12 @@ if (is_dir($music_dir)) {
       
       /* No need to keep the rip_id, we're just insuring it exists. */
       lookup_rip_id($artist_id, $album_id, $quality, $has_pun, $has_log, $has_bad);
-      
+
     }
-    closedir($base_handle);
-    
+
   }
-  
+
+  closedir($base_handle);
 }
 
 ?>
