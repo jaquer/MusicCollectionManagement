@@ -35,7 +35,7 @@ if (is_dir($music_dir)) {
       $quality = $matches[3];
       $has_pun = FALSE;
       $has_log = FALSE;
-      $has_not_comp = FALSE;
+      $has_bad = FALSE;
       
       $path_handle = opendir($path);
       
