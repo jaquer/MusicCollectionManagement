@@ -189,6 +189,13 @@ function print_confirmation($user_id) {
     if ( $query !== "") do_query($query);
 
   }
+  
+  /* Completely wipe out the session */
+  $_SESSION = array();
+  if (isset($_COOKIE[session_name()])) {
+    setcookie(session_name(), '', time()-42000, '/');
+  }
+  session_destroy();
 
 ?>
     <p>The albums you have selected have been queued. They will appear on your collection shortly.</p>
