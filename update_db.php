@@ -15,6 +15,8 @@ $pun_regexp  = "/\.pun$/";
 $log_regexp  = "/\.log$/";
 $bad_regexp  = "/^--NOT COMPLIANT WITH STANDARD--\.txt$/";
 
+$prev_last_rip = lookup_last_rip;
+
 if (is_dir($music_dir)) {
 
   $base_handle = opendir($music_dir);
@@ -62,37 +64,63 @@ if (is_dir($music_dir)) {
 
   closedir($base_handle);
 
-  /* Notify users of updates */
-  $query = "
+  $new_last_rip = lookup_last_rip();
 
-    SELECT DISTINCT
+  if ( $prev_last_rip != $new_last_rip ) {
+
+    /* Notify users of updates */
+    $query = "
+
+    SELECT
       user_name,
       user_email
     FROM
-      mdb_user,
-      mdb_rip
-    WHERE
-      user_last_visit < rip_added
+      mdb_user
 
-  ";
+    ";
 
-  $result = do_query($query);
+    $result = do_query($query);
 
-  while ( $row = get_row_r($result) ) {
+    while ( $row = get_row_r($result) ) {
 
-    $user_name  = $row['user_name'];
-    $user_email = $row['user_email'];
+      $user_name  = $row['user_name'];
+      $user_email = $row['user_email'];
 
-    $message = "Hello $user_name.\n\n";
-    $message .= "This is a reminder that there are new albums to be reviewed since the last time you visited the site.\n\n";
-    $message .= "Please stop by http://music.izaram.net to decide if you want these new albums added to your music directory.\n\n";
-    $message .= "-- \n";
-    $message .= "The Management";
+      $message = "Hello $user_name.\n\n";
+      $message .= "This is a reminder that there are new albums to be reviewed since the last time you visited the site.\n\n";
+      $message .= "Please stop by http://music.izaram.net to decide if you want these new albums added to your music directory.\n\n";
+      $message .= "-- \n";
+      $message .= "The Management";
 
-    mail($user_email, "Reminder", $message, "From: admin@izaram.net");
+      mail($user_email, "Reminder", $message, "From: admin@izaram.net");
+
+    }
 
   }
 
 }
+
+function lookup_last_rip() {
+
+  $query = "
+
+  SELECT
+    rip_id
+  FROM
+    mdb_rip
+  ORDER BY
+    rip_id DESC
+  LIMIT
+    1
+
+  ";
+
+  $row = get_row_q($query);
+
+  return $row['rip_id'];
+
+}
+
+
 
 ?>
