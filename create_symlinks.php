@@ -27,6 +27,9 @@ $existing_links = get_existing_links($dest_dir);
 $accepted_rips  = get_accepted_rips($user_id, $music_dir);
 $rejected_rips  = get_rejected_rips($user_id);
 
+if ( ! $accepted_rips )
+  die("No rips have been reviewed by user '$user_name'\n");
+
 update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir);
 
 function get_accepted_rips($user_id, $music_dir) {
