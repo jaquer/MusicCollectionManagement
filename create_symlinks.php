@@ -173,7 +173,7 @@ function update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_
 
   $to_create = ( isset($existing_links['rip_id']) ) ? array_diff($accepted_rips['rip_id'], $existing_links['rip_id']) : $accepted_rips['rip_id'];
 
-  $base_dest = $dest_dir . "/_new";
+  $base_dest = $dest_dir . "/_mcmnew";
   if ( ! is_dir($base_dest) )
     mkdir($base_dest);
 
