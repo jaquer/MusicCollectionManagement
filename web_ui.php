@@ -200,6 +200,9 @@ function print_confirmation($user_id) {
     if ( $query !== "") do_query($query);
 
   }
+
+  $query = "UPDATE mdb_user SET user_last_visit = NOW() WHERE user_id = $user_id";
+  do_query($query);
   
 ?>
     <p>The albums you have selected have been queued. They will appear on your collection shortly.</p>
