@@ -25,6 +25,7 @@ if ( ! $user_id = get_user_id($user_name) )
 
 $existing_links = get_existing_links($dest_dir);
 $accepted_rips  = get_accepted_rips($user_id);
+$rejected_rips  = get_rejected_rips($user_id);
 
 function get_accepted_rips($user_id) {
 
@@ -135,6 +136,34 @@ function lookup_link($item_path) {
   }
   
 }
+
+function get_rejected_rips($user_id) {
+
+  $query = "
+
+  SELECT 
+    rip_id
+  FROM
+    mdb_reviewed
+  WHERE
+    mdb_reviewed.user_id = $user_id
+  AND
+    mdb_reviewed.rip_status = 0
+
+  ";
+
+  $result = do_query($query);
+
+  while ( $row = get_row_r($result, FALSE) ) {
+    $rejected['rip_id'][] = $row['rip_id'];
+  }
+  
+  return $rejected;
+  
+}
+
+
+
 
 function get_user_id($user_name) {
   
