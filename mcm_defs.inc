@@ -3,7 +3,7 @@
 /*
  * mcm_defs.inc - Function/global definitions for the Music Content Management
  *
- * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/mcm_defs.inc,v 1.3 2004/09/06 03:39:23 jaquer Exp $
+ * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/mcm_defs.inc,v 1.4 2004/09/07 06:55:22 jaquer Exp $
  *
  */
 
@@ -50,6 +50,89 @@ function get_row_r($result, $remove_entities = TRUE) {
   if ($remove_entities)
     $row = row_to_htmlentities($row);
   return $row;
+  
+}
+
+function lookup_artist_id($artist, $debug = FALSE) {
+  
+  $query = "SELECT artist_id FROM mdb_artist WHERE artist_name = \"$artist\"";
+  
+  if ( $row = get_row_q($query) ) {
+    
+    $artist_id = $row['artist_id'];
+    if ($debug) echo "!!";
+    
+  }
+  else {
+    
+    $query = "INSERT INTO mdb_artist (artist_name) VALUES (\"$artist\")";
+    $result = do_query($query);
+    $artist_id = mysql_insert_id();
+    if ($debug) echo "++";
+    
+  }
+  
+  if ($debug) echo ">> $artist ($artist_id)\n";
+  
+  return $artist_id;
+  
+}
+
+function lookup_album_id($album, $debug = FALSE) {
+  
+  $query = "SELECT album_id FROM mdb_album WHERE album_name = \"$album\"";
+  
+  if ( $row = get_row_q($query) ) {
+    
+    $album_id = $row['album_id'];
+    if ($debug) echo "!!";
+    
+  }
+  else {
+    
+    $query = "INSERT INTO mdb_album (album_name) VALUES (\"$album\")";
+    $result = do_query($query);
+    $album_id = mysql_insert_id();
+    if ($debug) echo "++";
+    
+  }
+  
+  if ($debug) echo ">> $album ($album_id)\n";
+  
+  return $album_id;
+  
+}
+
+function lookup_rip_id($artist_id, $album_id, $rip_quality, $has_pun = FALSE, $has_log = FALSE, $has_bad = FALSE, $debug = FALSE) {
+  
+  $rip_flags = "";
+  $rip_flags .= ($has_pun) ? "P" : "";
+  $rip_flags .= ($has_log) ? "L" : "";
+  $rip_flags .= ($has_bad) ? "X" : "";
+
+  $query = "SELECT rip_id FROM mdb_rip WHERE artist_id = $artist_id AND album_id = $album_id AND rip_quality = \"$rip_quality\"";
+  
+  if ( $row = get_row_q($query) ) {
+    
+    $rip_id = $row['rip_id'];
+    $query = "UPDATE mdb_rip SET rip_flags = \"$rip_flags\" WHERE rip_id = $rip_id";
+    do_query($query);
+    if ($debug) echo "!!";
+    
+  }
+  else {
+    
+    
+    $query = "INSERT INTO mdb_rip (artist_id, album_id, rip_quality, rip_flags, rip_added) VALUES($artist_id, $album_id, \"$rip_quality\", \"$rip_flags\", NOW())";
+    $result = do_query($query);
+    $rip_id = mysql_insert_id();
+    if ($debug) echo "++";
+    
+  }
+  
+  if ($debug) echo ">> rip ($rip_id)\n";
+  
+  return $rip_id;
   
 }
 
