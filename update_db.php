@@ -76,6 +76,8 @@ if (is_dir($music_dir)) {
       user_email
     FROM
       mdb_user
+    WHERE
+      user_email IS NOT NULL
 
     ";
 
