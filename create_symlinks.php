@@ -18,12 +18,51 @@ $dest_dir  = $argv[2];
 if ( ! is_dir(realpath($dest_dir)) ) die("Directory '$dest_dir' does not exist.\n");
 if ( ! is_writable($dest_dir) ) die("Cannot write to '$dest_dir'\n");
 
-$dest_dir = realpath($destdir);
+$dest_dir = realpath($dest_dir);
 
 if ( ! $user_id = get_user_id($user_name) )
   die("User: '$user_name' does not exist.\n");
 
 $existing_links = get_existing_links($dest_dir);
+$accepted_rips  = get_accepted_rips($user_id);
+
+function get_accepted_rips($user_id) {
+
+  $query = "
+
+  SELECT 
+    mdb_rip.rip_id,
+    mdb_artist.artist_name,
+    mdb_album.album_name,
+    mdb_rip.rip_quality
+  FROM
+    mdb_rip,
+    mdb_artist,
+    mdb_album,
+    mdb_reviewed
+  WHERE
+    mdb_rip.rip_id = mdb_reviewed.rip_id
+  AND
+    mdb_rip.artist_id = mdb_artist.artist_id
+  AND
+    mdb_rip.album_id = mdb_album.album_id
+  AND
+    mdb_reviewed.user_id = $user_id
+  AND
+    mdb_reviewed.rip_status = 1
+
+  ";
+
+  $result = do_query($query);
+
+  while ( $row = get_row_r($result) ) {
+    $accepted['path'][] = $music_dir . "/[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]";
+    $accepted['rip_id'][] = $row['rip_id'];
+  }
+  
+  return $accepted;
+  
+}
 
 
 function get_existing_links($base_dir) {
@@ -59,7 +98,7 @@ function get_existing_links($base_dir) {
     closedir($dir_handle);
 
   }
-  
+
   return $links;
 
 }
