@@ -96,13 +96,15 @@ function get_existing_links($base_dir) {
       }
       
       if ( is_link($item_path) ) {
-        if ( $rip_id = lookup_link($item_path) ) {
-          if ( ! in_array($rip_id, $links['rip_id']) ) {
-            $links['path'][] = dirname($item_path);
-            $links['rip_id'][] = $rip_id;
+        if ( ! in_array(dirname($item_path), $links['path']) ) {
+          if ( $rip_id = lookup_link($item_path) ) {
+            if ( ! in_array($rip_id, $links['rip_id']) ) {
+              $links['path'][] = dirname($item_path);
+              $links['rip_id'][] = $rip_id;
+            }
           }
         }
-      } 
+      }
 
     }
 
