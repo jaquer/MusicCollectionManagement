@@ -4,7 +4,7 @@
 /*
  * update_db.php - Script to update the Music Content Management DB
  *
- * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/update_db.php,v 1.4 2004/09/06 04:01:46 jaquer Exp $
+ * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/update_db.php,v 1.5 2004/09/07 06:56:58 jaquer Exp $
  *
  */
  
@@ -46,6 +46,13 @@ if (is_dir($music_dir)) {
         
       }
       closedir($path_handle);
+      
+      /* Lookup the corresponing IDs. Creating the rows if necessary. */
+      $artist_id = lookup_artist_id($artist);
+      $album_id  = lookup_album_id($album);
+      
+      /* No need to keep the rip_id, we're just insuring it exists. */
+      lookup_rip_id($artist_id, $album_id, $quality, $has_pun, $has_log, $has_bad);
       
     }
     closedir($base_handle);
