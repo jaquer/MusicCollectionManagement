@@ -3,7 +3,7 @@
 /*
  * mcm_defs.inc - Function/global definitions for the Music Content Management
  *
- * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/mcm_defs.inc,v 1.2 2004/09/06 03:30:21 jaquer Exp $
+ * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/mcm_defs.inc,v 1.3 2004/09/06 03:39:23 jaquer Exp $
  *
  */
 
@@ -19,12 +19,9 @@ $db_pass = "musiiza";
 /* Main music dir */
 $music_dir = "/home/data/music";
 
-function connect_db() {
-  
-  mysql_connect($db_host, $db_user, $db_pass) or die ("Unable to connect to db\n");
-  mysql_select_db($db_name) or die ("Unable to open db\n");
-  
-}
+mysql_connect($db_host, $db_user, $db_pass) or die ("Unable to connect to db\n");
+mysql_select_db($db_name) or die ("Unable to open db\n");
+
 
 /* IN: A MySQL query */
 /* OUT: A MySQL result */
