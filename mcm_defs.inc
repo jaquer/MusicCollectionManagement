@@ -34,7 +34,7 @@ function do_query($query) {
 
 /* IN: A MySQL query */
 /* OUT: A MySQL_associated row */
-function get_row_q($query, $remove_entities = TRUE) {
+function get_row_q($query, $remove_entities = FALSE) {
   
   $result = do_query($query);
   $row = get_row_r($result, $remove_entities);
@@ -44,7 +44,7 @@ function get_row_q($query, $remove_entities = TRUE) {
 
 /* IN: A MySQL result */
 /* OUT: A MySQL associated row */
-function get_row_r($result, $remove_entities = TRUE) {
+function get_row_r($result, $remove_entities = FALSE) {
   
   $row = mysql_fetch_array($result);
   if ($remove_entities)
@@ -134,6 +134,16 @@ function lookup_rip_id($artist_id, $album_id, $rip_quality, $has_pun = FALSE, $h
   
   return $rip_id;
   
+}
+
+function lookup_user($user_id) {
+
+  $query = "SELECT * FROM mdb_user WHERE user_id = $user_id";
+
+  $row = get_row_q($query);
+
+  return $row;
+
 }
 
 ?>
