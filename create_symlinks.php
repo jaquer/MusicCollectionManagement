@@ -24,10 +24,12 @@ if ( ! $user_id = get_user_id($user_name) )
   die("User: '$user_name' does not exist.\n");
 
 $existing_links = get_existing_links($dest_dir);
-$accepted_rips  = get_accepted_rips($user_id);
+$accepted_rips  = get_accepted_rips($user_id, $music_dir);
 $rejected_rips  = get_rejected_rips($user_id);
 
-function get_accepted_rips($user_id) {
+update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir);
+
+function get_accepted_rips($user_id, $music_dir) {
 
   $query = "
 
@@ -60,7 +62,7 @@ function get_accepted_rips($user_id) {
     $accepted['path'][] = $music_dir . "/[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]";
     $accepted['rip_id'][] = $row['rip_id'];
   }
-  
+
   return $accepted;
   
 }
@@ -162,8 +164,34 @@ function get_rejected_rips($user_id) {
   
 }
 
+function update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir) {
 
+  $to_create = ( isset($existing_links['rip_id']) ) ? array_diff($accepted_rips['rip_id'], $existing_links['rip_id']) : $accepted_rips['rip_id'];
 
+  $base_dest = $dest_dir . "/_new";
+  if ( ! is_dir($base_dest) )
+    mkdir($base_dest);
+
+  foreach ($to_create as $key => $value) {
+
+    $source   = $accepted_rips['path'][$key];
+    $dest_dir = $base_dest . "/" . basename($source);
+    mkdir($dest_dir);
+    chdir($dest_dir);
+
+    $handle = opendir($source);
+
+    while ( $file = readdir($handle) ) {
+      if ( preg_match("/^.+\.(mp3|jpg|m3u)$/", $file) ) {
+        $command = "ln -s \"$source/$file\"";
+        exec($command);
+      }
+    }
+    closedir($handle);
+
+  }
+
+}
 
 function get_user_id($user_name) {
   
