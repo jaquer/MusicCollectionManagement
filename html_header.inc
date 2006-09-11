@@ -22,6 +22,12 @@
         text-align: center;
         padding: 1em;
       }
+      a:link img, a:visited img {
+        border: 3px solid #FFFFFF;
+      }
+      a:hover img {
+        border: 3px solid #99CCFF;
+      }
       .highlight {
         background-color: #99CCFF;
       }

@@ -154,10 +154,9 @@ function print_rips_list($user_id, $start, $status) {
         <?= (($row_number -1) % 4 == 0) ? "<tr>\n" : ""; ?>
           <td>
             <!-- ID: <?= $row['rip_id']; ?> -->
-            <img src="<?= $img ?>"><br />
+            <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>"><img src="<?= $img ?>"></a><br />
             <?= htmlentities($row['artist_name']); ?><br />
             <?= htmlentities($row['album_name']); ?><br />
-            <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>">Play</a><br />
           </td>
         <?= ($row_number % 4 == 0) ? "</tr>\n" : ""; ?>
 
