@@ -14,9 +14,6 @@ $user_name          = (isset($_POST['user_name'])) ? $_POST['user_name'] : "";
 $cleartext_password = (isset($_POST['password'])) ? $_POST['password'] : "";
 $encoded_password   = (isset($_SESSION['encoded_password'])) ? $_SESSION['encoded_password'] : md5($cleartext_password);
 
-/* Rips per page */
-$limit = 30;
-
 $start  = (isset($_POST['start'])) ? $_POST['start'] : "0";
 $status = (isset($_POST['submit'])) ? $_POST['submit'] : "";
 
@@ -65,7 +62,7 @@ include('html_footer.inc');
 
 function print_rips_list($user_id, $start, $status) {
 
-  $limit = 30;
+  $limit = 20;
   $user = lookup_user($user_id);
 
   $start = ( $status == "Next" ) ? $start + $limit : $start;
@@ -85,18 +82,7 @@ function print_rips_list($user_id, $start, $status) {
   }
 ?>
       <!-- End previous page data -->
-      <table>
-        <tr>
-          <th>Artist</th>
-          <th>Album</th>
-          <th>Yes</th>
-          <th>No</th>
-          <th>Maybe</th>
-          <th>Quality</th>
-          <th>Flags</th>
-          <th>Added</th>
-          <th>Play</th>
-        </tr>
+      <table width="90%">
 <?php
 
   $query = "
@@ -112,6 +98,8 @@ function print_rips_list($user_id, $start, $status) {
   AND
     mdb_reviewed.user_id = $user_id
   WHERE 
+    mdb_rip.rip_type = 'MUSIC'
+  AND 
     mdb_reviewed.rip_id IS NULL
   
   ";
@@ -123,17 +111,14 @@ function print_rips_list($user_id, $start, $status) {
 
   SELECT
     mdb_rip.rip_id,
-    mdb_rip.artist_id,
-    mdb_rip.album_id,
-    mdb_artist.artist_name,
-    mdb_album.album_name,
+    mdb_rip.artist_name,
+    mdb_rip.album_name,
     mdb_rip.rip_quality,
     mdb_rip.rip_flags,
+    mdb_rip.rip_type,
     mdb_rip.rip_added
   FROM
-    mdb_rip,
-    mdb_artist,
-    mdb_album
+    mdb_rip
   LEFT JOIN
     mdb_reviewed
   ON
@@ -141,9 +126,7 @@ function print_rips_list($user_id, $start, $status) {
   AND
     mdb_reviewed.user_id = $user_id
   WHERE
-    mdb_rip.artist_id = mdb_artist.artist_id
-  AND
-    mdb_rip.album_id = mdb_album.album_id
+    mdb_rip.rip_type = 'MUSIC'
   AND
     mdb_reviewed.rip_id IS NULL
   ORDER BY
@@ -161,23 +144,28 @@ function print_rips_list($user_id, $start, $status) {
 
   while ( $row = get_row_r($result) ) {
     $row_number++;
+
+    $path = "[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]";
+    chdir("/var/data/music/mp3/" .  $path);
+    $img = glob("*.jpg");
+    $img = (count($img) ? "/zina/mp3/" . $path . "/" . basename($img[0]) : "/images/no_cover.gif");
+
 ?>
-        <tr<?= ($row_number % 2) ? ' class="highlight"' : ""; ?>>
-          <!-- ID: <?= $row['rip_id']; ?> -->
-          <td><?= htmlentities($row['artist_name']); ?></td>
-          <td><?= htmlentities($row['album_name']); ?></td>
-          <td><input type="radio" name="id<?php echo $row['rip_id']; ?>" value="accepted"<?= print_checkbox($row['rip_id'], "accepted"); ?>></td>
-          <td><input type="radio" name="id<?= $row['rip_id']; ?>" value="rejected"<?= print_checkbox($row['rip_id'], "rejected"); ?>></td>
-          <td><input type="radio" name="id<?= $row['rip_id']; ?>" value="maybe"<?= print_checkbox($row['rip_id'], "maybe"); ?>></td>
-          <td<?= ($row['rip_quality'] == "APX") ? ' class="flag"' : ""; ?>><?= $row['rip_quality']; ?></td>
-          <td><?= ( $row['rip_flags'] != "" ) ? $row['rip_flags'] : "&nbsp;"; ?></td>
-          <td><?= $row['rip_added']; ?></td>
-          <td><a href="<?= "/zina/index.php?p=[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . 
-$row['rip_quality'] . "]&l=8&m=0&lf=true"; ?>">Play</a></td>
-        </tr>
+        <?= (($row_number -1) % 4 == 0) ? "<tr>\n" : ""; ?>
+          <td>
+            <!-- ID: <?= $row['rip_id']; ?> -->
+            <img src="<?= $img ?>"><br />
+            <?= htmlentities($row['artist_name']); ?><br />
+            <?= htmlentities($row['album_name']); ?><br />
+            <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>">Play</a><br />
+          </td>
+        <?= ($row_number % 4 == 0) ? "</tr>\n" : ""; ?>
+
 <?php
   }
+
 ?>
+        <?= ($row_number % 4 != 0) ? "</tr>\n" : ""; ?>
       </table>
       <p><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?> <?= ($start + $limit <= $num_rips) ? '<input type="submit" name="submit" value="Next">' : '' ?></p>
       <p><input type="submit" name="submit" value="Finish"></p>
