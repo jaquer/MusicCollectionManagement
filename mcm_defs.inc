@@ -101,20 +101,20 @@ function lookup_album_id($album, $debug = FALSE) {
   
 }
 
-function lookup_rip_id($artist_id, $album_id, $rip_quality, $has_pun = FALSE, $has_log = FALSE, $has_bad = FALSE, $debug = FALSE) {
+function lookup_rip_id($artist_id, $artist_name, $album_id, $album_name, $rip_quality, $has_pun = FALSE, $has_log = FALSE, $has_bad = FALSE, $debug = FALSE) {
   
   $rip_flags = "";
   $rip_flags .= ($has_pun) ? "P" : "";
   $rip_flags .= ($has_log) ? "L" : "";
   $rip_flags .= ($has_bad) ? "X" : "";
 
-  $query = "SELECT rip_id FROM mdb_rip WHERE artist_id = $artist_id AND album_id = $album_id AND rip_quality = '$rip_quality'";
+  $query = "SELECT rip_id FROM mdb_rip WHERE artist_name = \"$artist_name\" AND album_name = \"$album_name\" AND rip_quality = \"$rip_quality\"";
   
   if ( $row = get_row_q($query) ) {
     
     $rip_id = $row['rip_id'];
 
-    $query = "UPDATE mdb_rip SET rip_flags = '$rip_flags' WHERE rip_id = $rip_id";
+    $query = "UPDATE mdb_rip SET rip_flags = \"$rip_flags\" WHERE rip_id = $rip_id";
     do_query($query);
     if ($debug) echo "!!";
     
@@ -122,7 +122,7 @@ function lookup_rip_id($artist_id, $album_id, $rip_quality, $has_pun = FALSE, $h
   else {
     
     
-    $query = "INSERT INTO mdb_rip (artist_id, album_id, rip_quality, rip_flags, rip_added) VALUES($artist_id, $album_id, '$rip_quality', '$rip_flags', NOW())";
+    $query = "INSERT INTO mdb_rip (artist_id, artist_name, album_id, album_name, rip_quality, rip_flags, rip_added) VALUES($artist_id, \"$artist_name\", $album_id, \"$album_name\", \"$rip_quality\", \"$rip_flags\", NOW())";
     $result = do_query($query);
     $rip_id = mysql_insert_id();
     if ($debug) echo "++";
