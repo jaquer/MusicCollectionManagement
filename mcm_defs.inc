@@ -9,6 +9,7 @@
 
 /* Error reporting/debugging */
 ini_set("display_errors", "1");
+$debug = FALSE;
 
 /* DB globals */
 $db_host = "localhost";
@@ -51,7 +52,9 @@ function get_row_r($result) {
   
 }
 
-function lookup_artist_id($artist, $debug = FALSE) {
+function lookup_artist_id($artist) {
+
+  global $debug;
   
   $query = "SELECT artist_id FROM mdb_artist WHERE artist_name = \"$artist\"";
   
@@ -76,7 +79,9 @@ function lookup_artist_id($artist, $debug = FALSE) {
   
 }
 
-function lookup_album_id($album, $debug = FALSE) {
+function lookup_album_id($album) {
+
+  global $deubg;
   
   $query = "SELECT album_id FROM mdb_album WHERE album_name = \"$album\"";
   
@@ -101,7 +106,9 @@ function lookup_album_id($album, $debug = FALSE) {
   
 }
 
-function lookup_rip_id($artist_id, $artist_name, $album_id, $album_name, $rip_quality, $has_pun = FALSE, $has_log = FALSE, $has_bad = FALSE, $debug = FALSE) {
+function lookup_rip_id($artist_id, $artist_name, $album_id, $album_name, $rip_quality, $has_pun = FALSE, $has_log = FALSE, $has_bad = FALSE) {
+
+  global $debug;
   
   $rip_flags = "";
   $rip_flags .= ($has_pun) ? "P" : "";
