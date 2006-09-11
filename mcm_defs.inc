@@ -110,10 +110,12 @@ function lookup_rip_id($artist_id, $artist_name, $album_id, $album_name, $rip_qu
 
   global $debug;
   
-  $rip_flags = "";
-  $rip_flags .= ($has_pun) ? "P" : "";
-  $rip_flags .= ($has_log) ? "L" : "";
-  $rip_flags .= ($has_bad) ? "X" : "";
+  $rip_flags = Array();
+  if ($has_log) $rip_flags[] = "LOG";
+  if ($has_pun) $rip_flags[] = "PUN";
+  if ($has_bad) $rip_flags[] = "BAD";
+
+  $rip_flags = implode(",", $rip_flags);
 
   $query = "SELECT rip_id FROM mdb_rip WHERE artist_name = \"$artist_name\" AND album_name = \"$album_name\" AND rip_quality = \"$rip_quality\"";
   
