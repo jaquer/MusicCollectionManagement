@@ -172,7 +172,8 @@ function print_rips_list($user_id, $start, $status) {
           <td<?= ($row['rip_quality'] == "APX") ? ' class="flag"' : ""; ?>><?= $row['rip_quality']; ?></td>
           <td><?= ( $row['rip_flags'] != "" ) ? $row['rip_flags'] : "&nbsp;"; ?></td>
           <td><?= $row['rip_added']; ?></td>
-          <td><a href="<?= "/zina/index.php?p=[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]&l=8&m=0"; ?>">Play</a></td>
+          <td><a href="<?= "/zina/index.php?p=[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . 
+$row['rip_quality'] . "]&l=8&m=0&lf=true"; ?>">Play</a></td>
         </tr>
 <?php
   }
