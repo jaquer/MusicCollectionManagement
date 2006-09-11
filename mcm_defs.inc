@@ -18,7 +18,7 @@ $db_user = "musicdb";
 $db_pass = "musiiza";
 
 /* Main music dir */
-$music_dir = "/home/data/music";
+$music_dir = "/var/data/music/mp3";
 
 mysql_connect($db_host, $db_user, $db_pass) or die ("Unable to connect to db\n");
 mysql_select_db($db_name) or die ("Unable to open db\n");
