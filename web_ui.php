@@ -82,7 +82,7 @@ function print_rips_list($user_id, $start, $status) {
   }
 ?>
       <!-- End previous page data -->
-      <table width="90%">
+      <table width="98%">
 <?php
 
   $query = "
@@ -152,11 +152,11 @@ function print_rips_list($user_id, $start, $status) {
 
 ?>
         <?= (($row_number -1) % 4 == 0) ? "<tr>\n" : ""; ?>
-          <td>
+          <td width="25%">
             <!-- ID: <?= $row['rip_id']; ?> -->
             <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>"><img src="<?= $img ?>"></a><br />
-            <?= htmlentities($row['artist_name']); ?><br />
-            <?= htmlentities($row['album_name']); ?><br />
+            <div class="artist"><?= htmlentities($row['artist_name']); ?></div>
+            <div class="album"><?= htmlentities($row['album_name']); ?></div>
           </td>
         <?= ($row_number % 4 == 0) ? "</tr>\n" : ""; ?>
 

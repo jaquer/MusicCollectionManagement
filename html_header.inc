@@ -35,6 +35,9 @@
         color: #FF0000;
         /*font-weight: bold;*/
       }
+      .artist {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
