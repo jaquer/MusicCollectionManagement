@@ -2,6 +2,10 @@
   <head>
     <title>Music Collection Management</title>
     <style>
+      body {
+        font-family: Verdana, sans-serif;
+        font-size: 10pt;
+      }
       table {
         font-size: 80%;
         border-collapse: collapse;
@@ -11,14 +15,12 @@
         margin-left: auto;
         margin-right: auto;
       }
-      td {
-        border-right: 1px solid #000000;
-      }
       th {
         border: 1px solid #000000;
       }
       td, th {
-        padding: 0px 0.5em;
+        text-align: center;
+        padding: 1em;
       }
       .highlight {
         background-color: #99CCFF;
