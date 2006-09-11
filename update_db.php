@@ -56,7 +56,7 @@ if (is_dir($music_dir)) {
       $album_id  = lookup_album_id($album);
       
       /* No need to keep the rip_id, we're just insuring it exists. */
-      lookup_rip_id($artist_id, $album_id, $quality, $has_pun, $has_log, $has_bad);
+      lookup_rip_id($artist_id, $artist, $album_id, $album, $quality, $has_pun, $has_log, $has_bad);
 
     }
 
