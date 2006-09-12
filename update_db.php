@@ -8,7 +8,7 @@
  *
  */
  
-require_once('mcm_defs.inc');
+require_once('mcm_defs.inc.php');
 
 $name_regexp = "/^(\[.*\]) (\[.*\]) (\[.*\])$/";
 $pun_regexp  = "/\.pun$/";

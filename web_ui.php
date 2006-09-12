@@ -7,7 +7,7 @@
  *
  */
 
-require_once('mcm_defs.inc');
+require_once('mcm_defs.inc.php');
 session_start();
 
 $user_name          = (isset($_POST['user_name'])) ? $_POST['user_name'] : "";
