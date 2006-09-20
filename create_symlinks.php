@@ -4,11 +4,10 @@
 /*
  * create_symlinks.php - Script that creates symlinks for each user
  *
- * $Header: /var/oldvar/cvsroot/jaquer/new-mcm/create_symlinks.php,v 1.2 2004/09/06 03:38:19 jaquer Exp $
  *
  */
 
-require_once('mcm_defs.inc');
+require_once('mcm_defs.inc.php');
 
 if ( $argc < 3 || $argc > 3 ) die("Usage: " . $argv[0] . " username dest_dir\n");
 
@@ -38,20 +37,14 @@ function get_accepted_rips($user_id, $music_dir) {
 
   SELECT 
     mdb_rip.rip_id,
-    mdb_artist.artist_name,
-    mdb_album.album_name,
+    mdb_rip.artist_name,
+    mdb_rip.album_name,
     mdb_rip.rip_quality
   FROM
     mdb_rip,
-    mdb_artist,
-    mdb_album,
     mdb_reviewed
   WHERE
     mdb_rip.rip_id = mdb_reviewed.rip_id
-  AND
-    mdb_rip.artist_id = mdb_artist.artist_id
-  AND
-    mdb_rip.album_id = mdb_album.album_id
   AND
     mdb_reviewed.user_id = $user_id
   AND
@@ -172,6 +165,8 @@ function get_rejected_rips($user_id) {
 function update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir) {
 
   $to_create = ( isset($existing_links['rip_id']) ) ? array_diff($accepted_rips['rip_id'], $existing_links['rip_id']) : $accepted_rips['rip_id'];
+
+  if (! is_array($to_create)) return FALSE;
 
   $base_dest = $dest_dir . "/_mcmnew";
   if ( ! is_dir($base_dest) )
