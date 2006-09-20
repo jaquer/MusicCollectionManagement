@@ -69,7 +69,6 @@ function print_rips_list($user_id, $start, $status) {
   $start = ( $status == "Prev" ) ? $start - $limit : $start;
   $_POST['start'] = $start;
 ?>
-    <p style="font-size: 120%; font-weight: bold;">Welcome <?= $user['user_name']; ?>. Your last visit was on: <?= $user['user_last_visit']; ?></p>
 
     <form method="post" action="<?= $_SERVER['PHP_SELF']; ?>">
       <!-- Previous page data -->
@@ -151,12 +150,28 @@ function print_rips_list($user_id, $start, $status) {
     $img = (count($img) ? "/zina/mp3/" . $path . "/" . basename($img[0]) : "/images/no_cover.gif");
 
 ?>
+
         <?= (($row_number -1) % 4 == 0) ? "<tr>\n" : ""; ?>
-          <td width="25%">
+          <td class="item">
             <!-- ID: <?= $row['rip_id']; ?> -->
-            <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>"><img src="<?= $img ?>"></a><br />
-            <div class="artist"><?= htmlentities($row['artist_name']); ?></div>
-            <div class="album"><?= htmlentities($row['album_name']); ?></div>
+            <table class="item-table center no-pad">
+              <tr>
+                <td colspan="3" class="cover">
+                  <a href="<?= "/zina/index.php?p=" . $path . "&l=8&m=0"; ?>"><img src="<?= $img ?>"></a>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" class="artist"><?= htmlentities($row['artist_name']); ?></td>
+              </tr>
+              <tr>
+                <td colspan="3" class="album"><?= htmlentities($row['album_name']); ?></td>
+             </tr>
+             <tr>
+                <td class="choice true"><input class="true" id="id<?= $row['rip_id']; ?>-true" type="radio" name="id<?= $row['rip_id']; ?>" value="accepted"<?= print_checkbox($row['rip_id'], "accepted"); ?>><label for="id<?= $row['rip_id']; ?>-true">add</label></td>
+                <td class="choice false"><input class="false" id="id<?= $row['rip_id']; ?>-false" type="radio" name="id<?= $row['rip_id']; ?>" value="rejected"<?= print_checkbox($row['rip_id'], "rejected"); ?>><label for="id<?= $row['rip_id']; ?>-false">remove</label></td>
+                <td class="choice unsure"><input class="unsure" id="id<?= $row['rip_id']; ?>-undefined" type="radio" name="id<?= $row['rip_id']; ?>" value="maybe"<?= print_checkbox($row['rip_id'], "maybe"); ?>><label for="id<?= $row['rip_id']; ?>-undefined">unsure</label></td>
+             </tr>
+            </table>
           </td>
         <?= ($row_number % 4 == 0) ? "</tr>\n" : ""; ?>
 
@@ -166,8 +181,18 @@ function print_rips_list($user_id, $start, $status) {
 ?>
         <?= ($row_number % 4 != 0) ? "</tr>\n" : ""; ?>
       </table>
-      <p><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?> <?= ($start + $limit <= $num_rips) ? '<input type="submit" name="submit" value="Next">' : '' ?></p>
-      <p><input type="submit" name="submit" value="Finish"></p>
+      <table id="navigation" class="center">
+        <tr> 
+          <td id="prev"><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?></td>
+          <td id="finish"><input type="submit" name="submit" value="Finish"></td>
+          <td id="next"><?= ($start + $limit <= $num_rips) ? '<input type="submit" name="submit" value="Next">' : '' ?></td>
+        </tr>
+      </table>
+      </form>
+      <hr>
+      <p id="last-visit"><?= $user['user_name']; ?> &bull; last visit: <?= $user['user_last_visit']; ?></p>
+
+
 <?php
 }
 

@@ -1,0 +1,124 @@
+/* debug
+table, td {
+	border: 1px solid black;
+}
+/**/
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 10pt;
+}
+
+table#list {
+	width: 98%;
+	border: 1px solid #000;
+}
+
+table.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table.no-pad {
+	border-collapse: collapse;
+}
+
+/* WhyTF doesn't this work? */
+table.item-table {
+	height: 100%;
+}
+
+
+td.item {
+	width: 25%;
+	padding-bottom: 1em;
+	vertical-align: bottom;
+}
+
+td.cover, td.artist, td.album {
+	text-align: center;
+	font-size: 80%;
+}
+
+td.cover {
+	vertical-align: top;
+}
+
+td.artist {
+	font-weight: bold;
+}
+
+.choice input {
+	vertical-align: text-bottom;
+}
+
+td.choice {
+	text-align: right;
+	/* font-size: 70%; */
+}
+
+/*
+td.choice input {
+	vertical-align: text-bottom;
+}
+*/
+
+table#navigation {
+	width: 98%;
+}
+
+td#prev {
+	width: 33%;
+	text-align: left;
+}
+
+td#finish {
+	width: 34%;
+	text-align: center;
+}
+
+td#next {
+	width: 33%;
+	text-align: right;
+}
+
+a:link img, a:visited img {
+  border: 3px solid #FFFFFF;
+}
+
+a:hover img {
+  border: 3px solid #99CCFF;
+}
+
+#last-visit {
+  font-size: 70%;
+  text-align: right;
+}
+
+/* neat trick from http://pdatabase.dyndns.biz/tutorial02.php */
+
+input[type="radio"] {
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+input[type="radio"] + label {
+  padding-left: 20px;
+  height: 16px; /* this seems to be ignored by FF :/ */
+  background: url("images/radio.png") no-repeat;
+}
+
+input.true[type="radio"]:checked + label {
+  background: url("images/radio-accepted.png") no-repeat;
+}
+
+input.false[type="radio"]:checked + label {
+  background: url("images/radio-rejected.png") no-repeat;
+}
+
+input.unsure[type="radio"]:checked + label {
+  background: url("images/radio-checked.png") no-repeat;
+}
