@@ -1,44 +1,10 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>Music Collection Management</title>
-    <style>
-      body {
-        font-family: Verdana, sans-serif;
-        font-size: 10pt;
-      }
-      table {
-        font-size: 80%;
-        border-collapse: collapse;
-        border-spacing: 0;
-        border: 1px solid #000000;
-        /* center the table */
-        margin-left: auto;
-        margin-right: auto;
-      }
-      th {
-        border: 1px solid #000000;
-      }
-      td, th {
-        text-align: center;
-        padding: 1em;
-      }
-      a:link img, a:visited img {
-        border: 3px solid #FFFFFF;
-      }
-      a:hover img {
-        border: 3px solid #99CCFF;
-      }
-      .highlight {
-        background-color: #99CCFF;
-      }
-      .flag {
-        color: #FF0000;
-        /*font-weight: bold;*/
-      }
-      .artist {
-        font-weight: bold;
-      }
-    </style>
+    <link href="mcm.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <h1>Music Collection Management</h1>
