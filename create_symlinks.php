@@ -1,197 +1,220 @@
 #!/usr/bin/php
 <?php
 
-/*
- * create_symlinks.php - Script that creates symlinks for each user
- *
- *
- */
+/* symlinks_update.php - script to update user's symlinks */
 
-require_once('mcm_defs.inc.php');
+if (strcmp(PHP_SAPI, 'cli') != 0)
+  die("this script can only be called from the command line - exiting\n");
 
-if ( $argc < 3 || $argc > 3 ) die("Usage: " . $argv[0] . " username dest_dir\n");
+require_once('mcm_core.php');
 
-$user_name = $argv[1];
-$dest_dir  = $argv[2];
-
-if ( ! is_dir(realpath($dest_dir)) ) die("Directory '$dest_dir' does not exist.\n");
-if ( ! is_writable($dest_dir) ) die("Cannot write to '$dest_dir'\n");
-
-$dest_dir = realpath($dest_dir);
-
-if ( ! $user_id = get_user_id($user_name) )
-  die("User: '$user_name' does not exist.\n");
-
-$existing_links = get_existing_links($dest_dir);
-$accepted_rips  = get_accepted_rips($user_id, $music_dir);
-$rejected_rips  = get_rejected_rips($user_id);
-
-if ( ! $accepted_rips )
-  die("No rips have been reviewed by user '$user_name'\n");
-
-update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir);
-
-function get_accepted_rips($user_id, $music_dir) {
-
-  $query = "
-
-  SELECT 
-    mdb_rip.rip_id,
-    mdb_rip.artist_name,
-    mdb_rip.album_name,
-    mdb_rip.rip_quality
-  FROM
-    mdb_rip,
-    mdb_reviewed
-  WHERE
-    mdb_rip.rip_id = mdb_reviewed.rip_id
-  AND
-    mdb_reviewed.user_id = $user_id
-  AND
-    mdb_reviewed.rip_status = 1
-
-  ";
-
-  $result = do_query($query);
-
-  while ( $row = get_row_r($result) ) {
-    $accepted['path'][] = $music_dir . "/[" . $row['artist_name'] . "] [" . $row['album_name'] . "] [" . $row['rip_quality'] . "]";
-    $accepted['rip_id'][] = $row['rip_id'];
-  }
-
-  return $accepted;
-  
+if (posix_geteuid() == 0) {
+  update_all_users();
+  exit();
 }
 
-function get_existing_links($base_dir) {
+$user = read_input();
 
-  $dirs = array();
-  $links = array();
-  $links['path']   = array();
-  $links['rip_id'] = array();
+if (! mcm_action('validate_login', $user))
+  die("invalid username/password\n");
   
-  /* Get a list of all dirs */
-  $dirs[] = $base_dir;
+update_user($user);
 
-  for ($index = 0; $index < count($dirs); $index++) {
+die();
 
-    $current_dir = $dirs[$index];
-    $dir_handle = opendir($current_dir);
+function update_user($user) {
 
-    while ($item = readdir($dir_handle)) {
-
-      if ( ($item == ".") || ($item == "..") ) continue;
-
-      $item_path = $current_dir . "/" . $item;
+  global $mcm;
+  
+  /* if we ran validate_login(),then the $user_id hasn't been set... */
+  if (!isset($user['user_id']))
+    $user['user_id'] = $mcm['user_id'];
+  
+  $prefs = mcm_action('lookup_prefs', $user['user_id']);
+  
+  if (isset($user['forced_target']))
+    $prefs['pref_target'] = $user['forced_target'];
+    
+  echo "updating symlinks for user '${user['user_name']}' on directory '${prefs['pref_target']}'\n";
+  
+  if (! $prefs = validate_prefs($prefs)) return;
+  
+  echo "  - current symlinks: ";
+  $current = mcm_action('read_symlinks', $prefs['pref_target']);
+  echo count($current) . " found\n";
+  
+  echo "  - accepted rips: ";
+  $params = array('reviewed' => 'accepted', 'user_id' => $user['user_id'], 'type' => 'MUSIC');
+  $accepted = mcm_action('lookup_reviewed', $params);
+  echo count($accepted) . "\n";
+  
+  echo "  - rejected rips: ";
+  $params['reviewed'] = 'rejected';
+  $rejected = mcm_action('lookup_reviewed', $params);
+  echo count($rejected) . "\n";
+  
+  /* sorting (hopefully?) makes diff/intersect faster */
+  ksort($current);
+  ksort($accepted);
+  ksort($rejected);
+  
+  $create = key_diff($accepted, $current);
+  $remove = key_intersect($rejected, $current);
+  
+  $mcmnew_dir = "${prefs['pref_target']}/_mcmnew";
+  
+  if (! make_mcmnew_dir($mcmnew_dir))
+    return;
+  
+  $create_list = generate_create_list($create, $accepted, $prefs['pref_extensions']);
+  
+  chdir($mcmnew_dir);
+  
+  foreach ($create_list as $item) {
+  
+    $dirname = $item['dirname'];
+    $path    = $item['path'];
+    $files   = $item['files'];
+    
+    mkdir($dirname);
+    
+    foreach ($files as $file)
+      symlink("${path}/${file}", "${dirname}/${file}");
       
-      if ( is_dir($item_path) ) {
-        $dirs[] = $item_path;
-      }
-      
-      if ( is_link($item_path) ) {
-        if ( ! in_array(dirname($item_path), $links['path']) ) {
-          if ( $rip_id = lookup_link($item_path) ) {
-            if ( ! in_array($rip_id, $links['rip_id']) ) {
-              $links['path'][] = dirname($item_path);
-              $links['rip_id'][] = $rip_id;
-            }
-          }
-        }
-      }
+    if ($prefs['pref_codepage'] != $mcm['codepage'])
+      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${dirname}\" >/dev/null");
+    
+  }
+  
+}
 
+function generate_create_list($create, $accepted, $extensions) {
+
+  global $mcm;
+  
+  $list = array();
+
+
+  $pwd  = getcwd();
+  $root = $mcm['basedir'];
+  $pattern = "{,.}*.{" .$extensions . "}";
+  
+  foreach ($create as $id) {
+  
+    $rip = $accepted[$id];
+    
+    $dirname = "[${rip['artist_name']}] [${rip['album_name']}] [${rip['rip_quality']}]";
+    $path    = "${root}/${dirname}";
+    
+    chdir($path);
+    
+    $files = glob($pattern, GLOB_BRACE);
+    
+    $list[] = array('dirname' => $dirname, 'path' => $path, 'files' => $files);
+    
+  }
+  
+  chdir($pwd);
+  
+  return $list;
+  
+}
+
+function make_mcmnew_dir($mcmnew_dir) {
+
+  if (! is_dir($mcmnew_dir)) {
+    if (! mkdir($mcmnew_dir)) {
+      echo "  error: unable to create mcm subdir under target directory\n";
+      return FALSE;
     }
-
-    closedir($dir_handle);
-
   }
+  
+  return TRUE;
+  
+}
 
-  return $links;
+
+function update_all_users() {
+
+  $users = mcm_action('lookup_all_users');
+  
+  echo "superuser mode - updating symlinks for all users with default settings\n";
+  
+  foreach ($users as $user) {
+    $user['seteuid'] = TRUE; /* attempt to change uid to the sysname of the user */
+    update_user($user);
+  }
 
 }
 
-function lookup_link($item_path) {
-  
-  $name_regexp = "/^.*(\[.*\]) (\[.*\]) (\[.*\])$/";
-  
-  $target = readlink($item_path);
-  
-  if ( preg_match($name_regexp, dirname($target), $matches) || preg_match($name_regexp, $target, $matches) ) {
-    /* Remove the leading/trailing brackets from the names */
-    foreach ($matches as $key => $value)
-      $matches[$key] = trim($value, '[]');
+function validate_prefs($prefs) {
 
-    $artist      = $matches[1];
-    $album       = $matches[2];
-    $rip_quality = $matches[3];
+  $sysinfo = posix_getpwnam($prefs['pref_sysname']);
+  $prefs['pref_sysid'] = $sysinfo['uid']; /* will be empty if  sysname is invalid */
+  
+  $target = $prefs['pref_target'];
+  if (! is_dir($target)) {
+    echo "  target directory '${target}' does no exist\n";
+    return FALSE;
+  }
+  if (! is_writeable($target)) {
+    echo "  cannot write to target directory '${target}'\n";
+    return FALSE;
+  }
+  
+  return $prefs;
+  
+}
+
+function read_input() {
+
+  $input = getopt("u:p:t:");
+  
+  if (!isset($input['u']))
+    die("usage: ${_SERVER['PHP_SELF']} -u mcm_username [-p password] [-t target] - exiting\n");
+  
+  $user_name = $input['u'];
+  
+  if (isset($input['p']))
+    $password = $input['p'];
+  else
+    $password = read_password($user_name);
     
-    $artist_id = lookup_artist_id($artist);
-    $album_id  = lookup_album_id($album);
+  if (isset($input['t']))
+    $forced_target = $input['t'];
     
-    $query = "SELECT rip_id FROM mdb_rip WHERE artist_id = $artist_id AND album_id = $album_id AND rip_quality = '$rip_quality'";
-
-    $row = get_row_q($query);
-
-    return $row['rip_id'];
-    
-  }
+  return array('user_name' => $user_name, 'password' => md5($password), 'forced_target' => $forced_target);
   
 }
 
-function get_rejected_rips($user_id) {
+function read_password($user_name) {
 
-  $query = "
-
-  SELECT 
-    rip_id
-  FROM
-    mdb_reviewed
-  WHERE
-    mdb_reviewed.user_id = $user_id
-  AND
-    mdb_reviewed.rip_status = 0
-
-  ";
-
-  $result = do_query($query);
-
-  while ( $row = get_row_r($result, FALSE) ) {
-    $rejected['rip_id'][] = $row['rip_id'];
-  }
+  echo "enter password for user '${user_name}': ";
+  system("stty -echo");
+  $password = fgets(STDIN);
+  system("stty echo");
+  echo "\n";
   
-  return $rejected;
+  return trim($password);
   
 }
 
-function update_symlinks($existing_links, $accepted_rips, $rejected_rips, $dest_dir) {
+function key_diff($array_one, $array_two) {
 
-  $to_create = ( isset($existing_links['rip_id']) ) ? array_diff($accepted_rips['rip_id'], $existing_links['rip_id']) : $accepted_rips['rip_id'];
-
-  if (! is_array($to_create)) return FALSE;
-
-  $base_dest = $dest_dir . "/_mcmnew";
-  if ( ! is_dir($base_dest) )
-    mkdir($base_dest);
-
-  foreach ($to_create as $key => $value) {
-
-    $source   = $accepted_rips['path'][$key];
-    $dest_dir = $base_dest . "/" . basename($source);
-    mkdir($dest_dir);
-    chdir($dest_dir);
-
-    $handle = opendir($source);
-
-    while ( $file = readdir($handle) ) {
-      if ( preg_match("/^.+\.(mp3|jpg|m3u)$/", $file) ) {
-        $command = "ln -s \"$source/$file\"";
-        exec($command);
-      }
-    }
-    closedir($handle);
-
-  }
-
+  $keys_one = array_keys($array_one);
+  $keys_two = array_keys($array_two);
+  
+  return array_diff($keys_one, $keys_two);
+  
 }
 
+function key_intersect($array_one, $array_two) {
+
+  $keys_one = array_keys($array_one);
+  $keys_two = array_keys($array_two);
+  
+  return array_intersect($keys_one, $keys_two);
+  
+}
 
 ?>
