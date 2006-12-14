@@ -16,13 +16,36 @@ function mcm_login() {
   
 }
 
-function mcm_login_form() {
+function mcm_login_form($advanced) {
 
-  global $mcm
+  global $mcm;
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
       <p>Username: <input type="text" name="user_name" size="15" value="<?php echo $mcm['user_name']; ?>"></p>
       <p>Password: <input type="password" name="password" size=15></p>
+<?php
+
+  if ($advanced) {
+
+?>
+      <p>Show
+        <select name="reviewed">
+          <option value="undecided" selected>unreviewed</option>
+          <option value="accepted">accepted</option>
+          <option value="rejected">rejected</option>
+        </select>
+        <select name="type">
+          <option value="music" selected>music</option>
+          <option value="audiobook">audio book</option>
+          <option value="dupe">duplicate</option>
+        </select>
+        items.
+      </p>
+<?php
+
+  }
+
+?>
       <p><input type="submit" name="submit" value="Enter"></p>
     </form>
 <?php
@@ -51,17 +74,20 @@ function mcm_print_table($params) {
   $start = ( $params['action'] == "prev" ) ? $start - $limit : $start;
   
   /* determine number of rips available */
-  $params = array('user_id' => $mcm['user_id'], 'type' => $params['type']);
+  $params = array('user_id' => $mcm['user_id'], 'reviewed' => $params['reviewed'], 'type' => $params['type']);
   $num_rips = mcm_action('lookup_reviewed_count', $params);
   
-  $params = array('reviewed' => 'undecided', 'user_id' => $mcm['user_id'], 'type' => $params['type'],
+  $params = array('reviewed' => $params['reviewed'], 'user_id' => $mcm['user_id'], 'type' => $params['type'],
                   'order' => 'artist_name, album_name, rip_quality', 'limit' => "${start}, ${limit}");
+
   $to_review = mcm_action('lookup_reviewed', $params);
   
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
       <table width="98%">
         <input type="hidden" name="start" value="<?php echo $start; ?>">
+        <input type="hidden" name="reviewed" value="<?php echo $params['reviewed'] ?>">
+        <input type="hidden" name="type" value="<?php echo $params['type'] ?>">
 <?php
 
   $row_number = 0;

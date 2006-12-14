@@ -80,28 +80,61 @@ function mcm_lookup_rip($params) {
 
 function mcm_lookup_reviewed_count($params) {
 
-  extract($params); /* $user_id
+  extract($params); /* $reviewed = {accepted,rejected,undecided}
+                       $user_id
                        $type = {MUSIC,AUDIOBOOK,DUPE}
+                       $order (optional)
+                       $limit (optional)
                     */
+                    
+  $query = "";
+
+  if ($reviewed == 'undecided') {
   
-  $query = "
+    $query = "
+    
+    SELECT 
+      COUNT(*) AS num_rips
+    FROM 
+      mdb_rip 
+    LEFT JOIN
+      mdb_reviewed 
+    ON 
+      mdb_rip.rip_id = mdb_reviewed.rip_id 
+    AND 
+      mdb_reviewed.user_id = ${user_id} 
+    WHERE 
+      mdb_rip.rip_type = '${type}' 
+    AND 
+      mdb_reviewed.rip_id IS NULL
+    ";
+
+  } else {
   
-  SELECT 
-    COUNT(*) AS num_rips 
-  FROM 
-    mdb_rip 
-  LEFT JOIN 
-    mdb_reviewed 
-  ON 
-    mdb_rip.rip_id = mdb_reviewed.rip_id 
-  AND 
-    mdb_reviewed.user_id = ${user_id} 
-  WHERE 
-    mdb_rip.rip_type = '${type}' 
-  AND 
-    mdb_reviewed.rip_id IS NULL
-  ";
+    $query = "
+    
+    SELECT 
+      COUNT(*) AS num_rips
+    FROM
+      mdb_rip,
+      mdb_reviewed
+    WHERE
+      mdb_rip.rip_id = mdb_reviewed.rip_id
+    AND
+      mdb_rip.rip_type = '${type}' 
+    AND
+      mdb_reviewed.user_id = ${user_id}
+    AND
+    ";
+    
+    if ($reviewed == 'accepted')
+      $query .= "    mdb_reviewed.rip_status = 1";
+    elseif ($reviewed == 'rejected')
+      $query .= "    mdb_reviewed.rip_status = 0";
+      
+  }
   
+
   $row = get_row_q($query);
   
   return $row['num_rips'];
@@ -152,6 +185,8 @@ function mcm_lookup_reviewed($params) {
       mdb_rip,
       mdb_reviewed
     WHERE
+      mdb_rip.rip_type = '${type}' 
+    AND 
       mdb_rip.rip_id = mdb_reviewed.rip_id
     AND
       mdb_reviewed.user_id = ${user_id}
@@ -170,7 +205,7 @@ function mcm_lookup_reviewed($params) {
     
   if (isset($limit))
     $query .= " LIMIT " . $limit;
-  
+
   $result = do_query($query);
   
   while ($row = get_row_r($result))

@@ -27,7 +27,7 @@ function mcm_action($action, $params = '') {
       break;
     case 'login_form':
       include_once('mcm_web_functions.php');
-      mcm_login_form();
+      mcm_login_form($params);
       break;
     case 'print_table':
       include_once('mcm_web_functions.php');
