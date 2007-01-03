@@ -40,33 +40,33 @@ function get_row_r($result) {
   
 }
 
-function mcm_lookup_rip($params) {
+function mcm_lookup_item($args) {
 
   /* this function should check is all required params have been passed */
   
-  extract($params);
+  extract($args, EXTR_PREFIX_ALL, 'arg'););
 
   $flags = Array();
-  if ($log) $flags[] = "LOG";
-  if ($pun) $flags[] = "PUN";
-  if ($bad) $flags[] = "BAD";
+  if ($arg_log) $flags[] = "LOG";
+  if ($arg_pun) $flags[] = "PUN";
+  if ($arg_bad) $flags[] = "BAD";
 
   $flags = implode(",", $flags);
 
-  $lookup_query = "SELECT * FROM mdb_rip WHERE artist_name = \"${artist}\" AND album_name = \"${album}\" AND rip_quality = \"${quality}\"";
+  $lookup_query = "SELECT * FROM mdb_item WHERE artist_name = \"${arg_artist_name}\" AND album_name = \"${arg_album_name}\" AND item_quality = \"${arg_item_quality}\"";
   
   $row = get_row_q($lookup_query);
   
   if ($row && $update) {
     
-    $query = "UPDATE mdb_rip SET rip_flags = \"${flags}\" WHERE rip_id = ${row['rip_id']}";
+    $query = "UPDATE mdb_item SET item_flags = \"${flags}\" WHERE item_id = ${row['item_id']}";
     do_query($query);
     
   }
   elseif (!$row && $insert) {
     
-    $insert_query = "INSERT INTO mdb_rip (artist_name, album_name, rip_quality, rip_flags, rip_added) 
-                     VALUES(\"${artist}\", \"${album}\", \"${quality}\", \"${flags}\", NOW())";
+    $insert_query = "INSERT INTO mdb_item (artist_name, album_name, item_quality, item_flags, item_added) 
+                     VALUES(\"${arg_artist_name}\", \"${arg_album_name}\", \"${arg_item_quality}\", \"${flags}\", NOW())";
     do_query($insert_query);
     
     /* recursive call time! */
@@ -78,35 +78,37 @@ function mcm_lookup_rip($params) {
   
 }
 
-function mcm_lookup_reviewed_count($params) {
+function mcm_lookup_itemlist_count($args) {
 
-  extract($params); /* $reviewed = {accepted,rejected,undecided}
-                       $user_id
-                       $type = {MUSIC,AUDIOBOOK,DUPE}
-                       $order (optional)
-                       $limit (optional)
-                    */
+  extract($args, EXTR_PREFIX_ALL, 'arg');
+  /* required:
+   *
+   * $arg_item_status  - {accepted,rejected,undefined}
+   * $arg_user_id      - user_id to limit results to
+   * $arg_item_type    - user-defined item type
+   *
+   */
                     
   $query = "";
 
-  if ($reviewed == 'undecided') {
+  if ($arg_item_status == 'undefined') {
   
     $query = "
     
     SELECT 
-      COUNT(*) AS num_rips
+      COUNT(*) AS num_items 
     FROM 
-      mdb_rip 
-    LEFT JOIN
-      mdb_reviewed 
+      mdb_item 
+    LEFT JOIN 
+      mdb_status 
     ON 
-      mdb_rip.rip_id = mdb_reviewed.rip_id 
+      mdb_item.item_id = mdb_status.item_id 
     AND 
-      mdb_reviewed.user_id = ${user_id} 
+      mdb_status.user_id = ${arg_user_id} 
     WHERE 
-      mdb_rip.rip_type = '${type}' 
+      mdb_item.item_type = '${arg_item_type}' 
     AND 
-      mdb_reviewed.rip_id IS NULL
+      mdb_status.item_id IS NULL
     ";
 
   } else {
@@ -114,102 +116,106 @@ function mcm_lookup_reviewed_count($params) {
     $query = "
     
     SELECT 
-      COUNT(*) AS num_rips
-    FROM
-      mdb_rip,
-      mdb_reviewed
-    WHERE
-      mdb_rip.rip_id = mdb_reviewed.rip_id
+      COUNT(*) AS num_items 
+    FROM 
+      mdb_item, 
+      mdb_status 
+    WHERE 
+      mdb_item.item_id = mdb_status.item_id
     AND
-      mdb_rip.rip_type = '${type}' 
+      mdb_item.item_type = '${arg_item_type}' 
     AND
-      mdb_reviewed.user_id = ${user_id}
+      mdb_status.user_id = ${arg_user_id}
     AND
     ";
     
-    if ($reviewed == 'accepted')
-      $query .= "    mdb_reviewed.rip_status = 1";
-    elseif ($reviewed == 'rejected')
-      $query .= "    mdb_reviewed.rip_status = 0";
+    if ($arg_item_status == 'accepted')
+      $query .= "    mdb_status.item_status = 1";
+    elseif ($arg_item_status == 'rejected')
+      $query .= "    mdb_status.item_status = 0";
       
   }
   
 
   $row = get_row_q($query);
   
-  return $row['num_rips'];
+  return $row['num_items'];
   
 }
 
-function mcm_lookup_reviewed($params) {
+function mcm_lookup_itemlist($args) {
 
-  /* this function should check if all required params have been passed */
-  
-  extract($params); /* $reviewed = {accepted,rejected,undecided}
-                       $user_id
-                       $type = {MUSIC,AUDIOBOOK,DUPE}
-                       $order (optional)
-                       $limit (optional)
-                    */
+  extract($args, EXTR_PREFIX_ALL, 'arg');
+  /* required:
+   *
+   * $arg_item_status - {accepted,rejected,undefined}
+   * $arg_item_type   - user-defined item type
+   * $arg_user_id     - user_id to limit results to
+   *
+   * optional:
+   *
+   * $order
+   * $limit
+   *
+   */
                     
-  $reviewed = strtolower($reviewed);
   $query = "";
   $return = array();
   
-  if ($reviewed == 'undecided') {
+  if ($arg_item_status == 'undefined') {
   
     $query = "
     
     SELECT 
-      mdb_rip.*
+      mdb_item.* 
     FROM 
-      mdb_rip 
-    LEFT JOIN
-      mdb_reviewed 
+      mdb_item 
+    LEFT JOIN 
+      mdb_status 
     ON 
-      mdb_rip.rip_id = mdb_reviewed.rip_id 
+      mdb_item.item_id = mdb_status.item_id 
     AND 
-      mdb_reviewed.user_id = ${user_id} 
+      mdb_status.user_id = ${arg_user_id} 
     WHERE 
-      mdb_rip.rip_type = '${type}' 
+      mdb_item.item_type = '${arg_item_type}' 
     AND 
-      mdb_reviewed.rip_id IS NULL
+      mdb_status.item_id IS NULL
     ";
   } else {
   
     $query = "
     
     SELECT 
-      mdb_rip.*
-    FROM
-      mdb_rip,
-      mdb_reviewed
-    WHERE
-      mdb_rip.rip_type = '${type}' 
+      mdb_item.* 
+    FROM 
+      mdb_item, 
+      mdb_status 
+    WHERE 
+      mdb_item.item_type = '${arg_item_type}' 
     AND 
-      mdb_rip.rip_id = mdb_reviewed.rip_id
-    AND
-      mdb_reviewed.user_id = ${user_id}
+      mdb_item.item_id = mdb_status.item_id 
+    AND 
+      mdb_status.user_id = ${arg_user_id}
     AND
     ";
     
-    if ($reviewed == 'accepted')
-      $query .= "    mdb_reviewed.rip_status = 1";
-    elseif ($reviewed == 'rejected')
-      $query .= "    mdb_reviewed.rip_status = 0";
+    if ($arg_item_status == 'accepted')
+      $query .= "    mdb_status.item_status = 1";
+    elseif ($arg_item_status == 'rejected')
+      $query .= "    mdb_status.item_status = 0";
       
   }
   
-  if (isset($order))
-    $query .= " ORDER BY " . $order;
+  if (isset($arg_order))
+    $query .= " ORDER BY " . $arg_order;
     
-  if (isset($limit))
-    $query .= " LIMIT " . $limit;
+  if (isset($arg_limit))
+    $query .= " LIMIT " . $arg_limit;
 
   $result = do_query($query);
   
   while ($row = get_row_r($result))
-    $return[$row['rip_id']] = $row;
+    $return[$row['item_id']] = $row;
     
   return $return;
   
@@ -257,16 +263,16 @@ function lookup_user($user_id) {
 
 }
 
-function mcm_lookup_last_rip() {
+function mcm_lookup_last_item() {
 
   $query = "
 
   SELECT
-    rip_id
+    item_id
   FROM
-    mdb_rip
+    mdb_item
   ORDER BY
-    rip_id DESC
+    item_id DESC
   LIMIT
     1
 
@@ -274,7 +280,7 @@ function mcm_lookup_last_rip() {
 
   $row = get_row_q($query);
 
-  return $row['rip_id'];
+  return $row['item_id'];
   
 }
 

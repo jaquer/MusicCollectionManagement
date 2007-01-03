@@ -21,25 +21,25 @@ function mcm_action($action, $params = '') {
       include_once('mcm_html_footer.php');
       mcm_html_footer($params);
       break;
-    case 'login':
+    case 'web_login':
       include_once('mcm_web_functions.php');
-      return mcm_login();
+      return mcm_web_login();
       break;
-    case 'login_form':
+    case 'web_login_form':
       include_once('mcm_web_functions.php');
-      mcm_login_form($params);
+      mcm_web_login_form($params);
       break;
-    case 'print_table':
+    case 'web_print_table':
       include_once('mcm_web_functions.php');
-      mcm_print_table($params);
+      mcm_web_print_table($params);
       break;
-    case 'record_selected':
+    case 'web_record_selections':
       include_once('mcm_web_functions.php');
-      mcm_record_selected();
+      mcm_web_record_selections();
       break;
-    case 'finish_selection':
+    case 'web_finish_selection':
       include_once('mcm_web_functions.php');
-      mcm_finish_selection();
+      mcm_web_finish_selection();
       break;
     case 'read_dirlist':
       include_once('mcm_dirlist.php');
@@ -49,13 +49,13 @@ function mcm_action($action, $params = '') {
       include_once('mcm_dirlist.php');
       return mcm_parse_dirlist($params);
       break;
-    case 'lookup_last_rip':
+    case 'lookup_last_item':
       include_once('mcm_mysql.php');
-      return mcm_lookup_last_rip();
+      return mcm_lookup_last_item();
       break;
-    case 'lookup_rip':
+    case 'lookup_item':
       include_once('mcm_mysql.php');
-      return mcm_lookup_rip($params);
+      return mcm_lookup_item($params);
       break;
     case 'lookup_prefs':
       include_once('mcm_mysql.php');
@@ -65,13 +65,13 @@ function mcm_action($action, $params = '') {
       include_once('mcm_mysql.php');
       return mcm_lookup_all_users();
       break;
-    case 'lookup_reviewed':
+    case 'lookup_itemlist':
       include_once('mcm_mysql.php');
-      return mcm_lookup_reviewed($params);
+      return mcm_lookup_itemlist($params);
       break;
-    case 'lookup_reviewed_count':
+    case 'lookup_itemlist_count':
       include_once('mcm_mysql.php');
-      return mcm_lookup_reviewed_count($params);
+      return mcm_lookup_itemlist_count($params);
       break;
     case 'create_cover_url':
       include_once('mcm_web_functions.php');
@@ -84,6 +84,9 @@ function mcm_action($action, $params = '') {
     case 'read_symlinks':
       include_once('mcm_symlinks.php');
       return mcm_read_symlinks($params);
+      break;
+    default:
+      echo "unknown core action: ${action}\n";
       break;
   }
 

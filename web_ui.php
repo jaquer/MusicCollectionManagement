@@ -7,30 +7,30 @@ require_once('mcm_core.php');
 
 mcm_action('html_header');
 
-$advanced = (isset($_GET['advanced'])) ? $_GET['advanced'] : FALSE;
+$advanced = (isset($_GET['advanced'])) ? (bool) $_GET['advanced'] : FALSE;
 
-if (!mcm_action('login')) {
-  mcm_action('login_form', $advanced);
+if (!mcm_action('web_login')) {
+  mcm_action('web_login_form', array('advanced' => $advanced));
   mcm_action('html_footer');
   exit;
 }
 
 $action   = (isset($_POST['submit'])) ? strtolower($_POST['submit']) : NULL;
 $start    = (isset($_POST['start'])) ? abs(intval($_POST['start'])) : "0";
-$type     = (isset($_POST['type'])) ? strtoupper($_POST['type']) : 'MUSIC';
-$reviewed = (isset($_POST['reviewed'])) ? strtolower($_POST['reviewed']) : 'undecided';
+$item_type   = (isset($_POST['item_type'])) ? strtoupper($_POST['item_type']) : 'MUSIC';
+$item_status = (isset($_POST['item_status'])) ? strtolower($_POST['item_status']) : 'undefined';
 
 switch($action) {
 
   case 'finish':
-    mcm_action('record_selected');
-    mcm_action('finish_selection');
+    mcm_action('web_record_selections');
+    mcm_action('web_finish_selection');
     break;
   case 'enter':
   case 'next':
   case 'prev':
-    mcm_action('record_selected');
-    mcm_action('print_table', array('action' => $action, 'start' => $start, 'reviewed' => $reviewed, 'type' => $type));
+    mcm_action('web_record_selections');
+    mcm_action('web_print_table', array('action' => $action, 'start' => $start, 'item_status' => $item_status, 'item_type' => $item_type));
     break;
 }
 

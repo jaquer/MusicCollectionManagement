@@ -28,19 +28,19 @@ echo "  parsing directory list... ";
 $itemlist = mcm_action('parse_dirlist', $dirlist);
 echo count($itemlist) . " valid entries found\n";
 
-$last_rip = mcm_action('lookup_last_rip');
+$last_item = mcm_action('lookup_last_item');
 
 /* proceed with update */
-foreach ($itemlist as $rip) {
+foreach ($itemlist as $item) {
 
-  $params = array('artist' => $rip['artist'], 'album' => $rip['album'], 'quality' => $rip['quality'],
-                  'pun' => $rip['pun'], 'log' => $rip['log'], 'bad' => $rip['bad'], 'update' => TRUE, 'insert' => TRUE);
+  $params = array('artist_name' => $item['artist_name'], 'album_name' => $item['album_name'], 'item_quality' => $item['item_quality'],
+                  'pun' => $item['pun'], 'log' => $item['log'], 'bad' => $item['bad'], 'update' => TRUE, 'insert' => TRUE);
                   
-  mcm_action('lookup_rip', $params);
+  mcm_action('lookup_item', $params);
   
 }
 
-if ( $count = (mcm_action('lookup_last_rip') - $last_rip)) {
+if ( $count = (mcm_action('lookup_last_item') - $last_item)) {
 
   echo "  " . $count . " new items found - notifying users\n";
 

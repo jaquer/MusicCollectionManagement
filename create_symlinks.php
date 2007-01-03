@@ -43,14 +43,14 @@ function update_user($user) {
   $current = mcm_action('read_symlinks', $prefs['pref_target']);
   echo count($current) . " found\n";
   
-  echo "  - accepted rips: ";
-  $params = array('reviewed' => 'accepted', 'user_id' => $user['user_id'], 'type' => 'MUSIC');
-  $accepted = mcm_action('lookup_reviewed', $params);
+  echo "  - accepted items: ";
+  $params = array('user_id' => $user['user_id'], 'item_status' => 'accepted', 'item_type' => 'MUSIC');
+  $accepted = mcm_action('lookup_itemlist', $params);
   echo count($accepted) . "\n";
   
-  echo "  - rejected rips: ";
-  $params['reviewed'] = 'rejected';
-  $rejected = mcm_action('lookup_reviewed', $params);
+  echo "  - rejected items: ";
+  $params['item_status'] = 'rejected';
+  $rejected = mcm_action('lookup_itemlist', $params);
   echo count($rejected) . "\n";
   
   /* sorting (hopefully?) makes diff/intersect faster */
@@ -101,9 +101,9 @@ function generate_create_list($create, $accepted, $extensions) {
   
   foreach ($create as $id) {
   
-    $rip = $accepted[$id];
+    $item = $accepted[$id];
     
-    $dirname = "[${rip['artist_name']}] [${rip['album_name']}] [${rip['rip_quality']}]";
+    $dirname = "[${item['artist_name']}] [${item['album_name']}] [${item['item_quality']}]";
     $path    = "${root}/${dirname}";
     
     chdir($path);

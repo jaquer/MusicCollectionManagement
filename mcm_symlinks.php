@@ -15,21 +15,21 @@ function mcm_read_symlinks($path) {
     $current = $dirs[$index];
     $handle  = opendir($current);
 
-    while ($item = readdir($handle)) {
+    while ($entry = readdir($handle)) {
 
-      if ( ($item == ".") || ($item == "..") ) continue;
+      if ( ($entry == ".") || ($entry == "..") ) continue;
 
-      $item_path = "${current}/${item}";
+      $path = "${current}/${entry}";
       
-      if ( is_dir($item_path) && is_readable($item_path)) {
-        $dirs[] = $item_path;
+      if ( is_dir($path) && is_readable($path)) {
+        $dirs[] = $path;
       }
       
-      if ( is_link($item_path) ) {
+      if ( is_link($path) ) {
       
-        if ($rip  = lookup_link($item_path)) {
+        if ($item = lookup_link($path)) {
         
-          $paths[$rip['rip_id']] = dirname($item_path);
+          $paths[$item['item_id']] = dirname($path);
           continue;
           
         }
@@ -53,12 +53,12 @@ function lookup_link($symlink) {
   
   $target = readlink($symlink);
   
-  /* the symlink coul be targeting either a file inside a rip's dir, or the dir itself */
+  /* the symlink could be targeting either a file inside a item's dir, or the dir itself */
   if (preg_match($name_regexp, basename(dirname($target)), $matches) || preg_match($name_regexp, basename($target), $matches)) {
   
-    $params = array('artist' => $matches[1], 'album'  => $matches[2], 'quality' => $matches[3], 'update' => FALSE, 'insert' => FALSE);
+    $params = array('artist_name' => $matches[1], 'album_name'  => $matches[2], 'item_quality' => $matches[3], 'update' => FALSE, 'insert' => FALSE);
     
-    return mcm_action('lookup_rip', $params);
+    return mcm_action('lookup_item', $params);
     
   }
   

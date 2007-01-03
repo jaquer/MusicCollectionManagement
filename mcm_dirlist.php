@@ -42,9 +42,9 @@ function mcm_parse_dirlist($dirlist) {
   
     if (preg_match($name_regexp, $directory, $matches)) {
     
-      $artist  = $matches[1];
-      $album   = $matches[2];
-      $quality = $matches[3];
+      $artist_name  = $matches[1];
+      $album_name   = $matches[2];
+      $item_quality = $matches[3];
       $pun = FALSE;
       $log = FALSE;
       $bad = FALSE;
@@ -62,7 +62,7 @@ function mcm_parse_dirlist($dirlist) {
           
       }
       
-      $itemlist[] = array('artist' => $artist, 'album' => $album, 'quality' => $quality,
+      $itemlist[] = array('artist_name' => $artist_name, 'album_name' => $album_name, 'item_quality' => $item_quality,
                           'pun' => $pun, 'log' => $log, 'bad' => $bad);
         
     }

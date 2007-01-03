@@ -2,7 +2,7 @@
 
 /* mcm_web_functions - functions used in web_ui */
 
-function mcm_login() {
+function mcm_web_login() {
 
   if (isset($_SESSION['user_name']) && isset($_SESSION['password'])) {
     $params = array('user_name' => $_SESSION['user_name'], 'password' =>$_SESSION['password']);
@@ -16,25 +16,28 @@ function mcm_login() {
   
 }
 
-function mcm_login_form($advanced) {
+function mcm_web_login_form($args) {
 
   global $mcm;
+  extract($args, EXTR_PREFIX_ALL, 'arg');
+  /* arg_advanced - flag to output advanced login options */
+  
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
       <p>Username: <input type="text" name="user_name" size="15" value="<?php echo $mcm['user_name']; ?>"></p>
       <p>Password: <input type="password" name="password" size=15></p>
 <?php
 
-  if ($advanced) {
+  if ($arg_advanced) {
 
 ?>
-      <p>Show
-        <select name="reviewed">
-          <option value="undecided" selected>unreviewed</option>
+      <p>Review 
+        <select name="item_status">
+          <option value="undefined" selected>undefined</option>
           <option value="accepted">accepted</option>
           <option value="rejected">rejected</option>
         </select>
-        <select name="type">
+        <select name="item_type">
           <option value="music" selected>music</option>
           <option value="audiobook">audio book</option>
           <option value="dupe">duplicate</option>
@@ -51,53 +54,64 @@ function mcm_login_form($advanced) {
 <?php
 }
 
-function mcm_record_selected() {
+function mcm_web_record_selections() {
 
   foreach($_POST as $key => $value) {
   
-    if ((substr($key, 0, 2) == 'id') && ($value != 'undecided')) {
-      $_SESSION['reviewed'][substr($key, 2)] = $value;
+    if ((substr($key, 0, 2) == 'id') && ($value != 'undefined')) {
+      $_SESSION['status'][substr($key, 2)] = $value;
     }
       
   }
 
 }
 
-function mcm_print_table($params) {
+function mcm_web_print_table($args) {
 
   global $mcm;
   
+  extract($args, EXTR_PREFIX_ALL, 'arg');
+  /* 
+   * required:
+   *
+   * $arg_action      - {prev,next} order
+   * $arg_start       - query start offset
+   * $arg_item_status - {accepted,rejected,undefined}
+   * $arg_item_type   - user-defined item type
+   *
+   */
+  
   $limit = 20; /* TODO: set this as a config option */
-  $start = $params['start'];
+  $start = $arg_start;
   
-  $start = ( $params['action'] == "next" ) ? $start + $limit : $start;
-  $start = ( $params['action'] == "prev" ) ? $start - $limit : $start;
+  $start = ($arg_action == 'next') ? $start + $limit : $start;
+  $start = ($arg_action == 'prev') ? $start - $limit : $start;
   
-  /* determine number of rips available */
-  $params = array('user_id' => $mcm['user_id'], 'reviewed' => $params['reviewed'], 'type' => $params['type']);
-  $num_rips = mcm_action('lookup_reviewed_count', $params);
+  /* determine number of items available */
+  $params = array('user_id' => $mcm['user_id'], 'item_status' => $arg_item_status, 'item_type' => $arg_item_type,
+                  'order' => 'artist_name, album_name, item_quality', 'limit' => "${start}, ${limit}");
+                  
   
-  $params = array('reviewed' => $params['reviewed'], 'user_id' => $mcm['user_id'], 'type' => $params['type'],
-                  'order' => 'artist_name, album_name, rip_quality', 'limit' => "${start}, ${limit}");
-
-  $to_review = mcm_action('lookup_reviewed', $params);
+  $items_list = mcm_action('lookup_itemlist', $params);
+  $num_items  = mcm_action('lookup_itemlist_count', $params);
+  
   
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
       <table width="98%">
         <input type="hidden" name="start" value="<?php echo $start; ?>">
-        <input type="hidden" name="reviewed" value="<?php echo $params['reviewed'] ?>">
-        <input type="hidden" name="type" value="<?php echo $params['type'] ?>">
+        <input type="hidden" name="item_status" value="<?php echo $arg_item_status; ?>">
+        <input type="hidden" name="item_type" value="<?php echo $arg_item_type; ?>">
 <?php
 
   $row_number = 0;
 
-  foreach ($to_review as $id => $row) {
+  foreach ($items_list as $id => $row) {
   
     $row_number++;
   
-    $album_dirname = "[${row['artist_name']}] [${row['album_name']}] [${row['rip_quality']}]";
-    $image = mcm_action('create_cover_url', $album_dirname);
+    $album_dirname = "[${row['artist_name']}] [${row['album_name']}] [${row['item_quality']}]";
+    $cover_url = mcm_action('create_cover_url', $album_dirname);
     
     echo (($row_number - 1) % 4 == 0) ? "       <tr>\n" : "";
     
@@ -106,19 +120,19 @@ function mcm_print_table($params) {
             <table class="item-table center no-pad">
               <tr>
                 <td colspan="3" class="cover">
-                  <a href="javascript:player('<?php echo base64_encode($album_dirname); ?>')"><img src="<?php echo $image ?>"></a>
+                  <a href="javascript:player('<?php echo base64_encode($album_dirname); ?>')"><img src="<?php echo $cover_url; ?>"></a>
                 </td>
               </tr>
               <tr>
-                <td colspan="3" class="artist"><?= htmlentities($row['artist_name']); ?></td>
+                <td colspan="3" class="artist"><?php echo htmlentities($row['artist_name']); ?></td>
               </tr>
               <tr>
-                <td colspan="3" class="album"><?= htmlentities($row['album_name']); ?></td>
+                <td colspan="3" class="album"><?php echo htmlentities($row['album_name']); ?></td>
              </tr>
              <tr>
                 <td class="choice accepted"><input class="accepted" id="id<?php echo $id; ?>-accepted" type="radio" name="id<?php echo $id; ?>" value="accepted"<?= print_checkbox($id, 'accepted'); ?>><label for="id<?php echo $id; ?>-accepted">add</label></td>
                 <td class="choice rejected"><input class="rejected" id="id<?php echo $id; ?>-rejected" type="radio" name="id<?php echo $id; ?>" value="rejected"<?= print_checkbox($id, 'rejected'); ?>><label for="id<?php echo $id; ?>-rejected">remove</label></td>
-                <td class="choice undecided"><input class="undecided" id="id<?php echo $id; ?>-undecided" type="radio" name="id<?php echo $id; ?>" value="undecided"<?= print_checkbox($id, 'undecided'); ?>><label for="id<?php echo $id; ?>-undecided">unsure</label></td>
+                <td class="choice undefined"><input class="undefined" id="id<?php echo $id; ?>-undefined" type="radio" name="id<?php echo $id; ?>" value="undefined"<?= print_checkbox($id, 'undefined'); ?>><label for="id<?php echo $id; ?>-undefined">unsure</label></td>
              </tr>
             </table>
           </td>
@@ -137,7 +151,7 @@ function mcm_print_table($params) {
         <tr> 
           <td id="prev"><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?></td>
           <td id="finish"><input type="submit" name="submit" value="Finish"></td>
-          <td id="next"><?= ($start + $limit <= $num_rips) ? '<input type="submit" name="submit" value="Next">' : '' ?></td>
+          <td id="next"><?= ($start + $limit <= $num_items) ? '<input type="submit" name="submit" value="Next">' : '' ?></td>
         </tr>
       </table>
   </form>
@@ -145,21 +159,21 @@ function mcm_print_table($params) {
 
 }
 
-function mcm_finish_selection() {
+function mcm_web_finish_selection() {
 
   global $mcm;
   
-  foreach ($_SESSION['reviewed'] as $rip_id => $value) {
+  foreach ($_SESSION['status'] as $item_id => $item_status) {
   
     $query = NULL;
     
-    switch ($value) {
+    switch ($item_status) {
     
       case 'accepted':
-        $query = "INSERT INTO mdb_reviewed (user_id, rip_id, rip_status) VALUES (${mcm['user_id']}, ${rip_id}, 1)";
+        $query = "INSERT INTO mdb_status (user_id, item_id, item_status) VALUES (${mcm['user_id']}, ${item_id}, 1)";
         break;
       case 'rejected':
-        $query = "INSERT INTO mdb_reviewed (user_id, rip_id, rip_status) VALUES (${mcm['user_id']}, ${rip_id}, 0)";
+        $query = "INSERT INTO mdb_status (user_id, item_id, item_status) VALUES (${mcm['user_id']}, ${item_id}, 0)";
         break;
     }
     
@@ -172,7 +186,7 @@ function mcm_finish_selection() {
   
 ?>
 
-    <p>The albums you have selected have been queued. They will appear on your collection shortly.</p>
+    <p>The items you have selected have been queued. They will appear on your collection shortly.</p>
     <form method="post" action="<?= $mcm['self'] ?>">
       <input type="submit" name="finished" value="Click here to finish process">
     </form>
@@ -186,11 +200,11 @@ function mcm_finish_selection() {
 
 function print_checkbox($id, $value) {
   
-  if ( (isset($_SESSION['reviewed'][$id])) && ($_SESSION['reviewed'][$id] == $value) ) {
+  if ((isset($_SESSION['status'][$id])) && ($_SESSION['status'][$id] == $value)) {
     return " checked";
   }
 
-  if ( ( ! isset($_SESSION['reviewed'][$id]) && ($value == "undecided" ) )) {
+  if ((!isset($_SESSION['status'][$id]) && ($value == "undefined" ))) {
     return " checked";
   }
   
@@ -218,32 +232,6 @@ function mcm_create_cover_url($album_dirname) {
     
   return $cache_url;
   
-}
-
-function validate_login($user_name, $password) {
-
-  global $mcm;
-  
-  $mcm['user_name'] = $user_name;
-
-  $query = "SELECT user_id, user_password FROM mdb_user WHERE user_name = '${user_name}'";
-  
-  $row = get_row_q($query);
-  
-  if ($password == $row['user_password']) {
-  
-    $_SESSION['user_name'] = $user_name;
-    $_SESSION['password'] = $password;
-    
-    $mcm['user_id'] = $row['user_id'];
-    
-    return TRUE;
-    
-  } else {
-  
-    return FALSE;
-    
-  }
 }
 
 ?>
