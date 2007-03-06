@@ -49,9 +49,10 @@ function mcm_web_login_form($args) {
   }
 
 ?>
-      <p><input type="submit" name="submit" value="Enter"></p>
+      <p><input type="submit" name="submit" value="Enter"><?php if (!$arg_advanced) echo ' <a style="font-size: 80%;" href="?advanced=true">advanced</a>'; ?></p>
     </form>
 <?php
+
 }
 
 function mcm_web_record_selections() {
