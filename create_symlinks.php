@@ -82,7 +82,7 @@ function update_user($user) {
       symlink("${path}/${file}", "${dirname}/${file}");
       
     if ($prefs['pref_codepage'] != $mcm['codepage'])
-      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${dirname}\" >/dev/null");
+      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${dirname}\" >/dev/null 2>&1");
     
   }
   
