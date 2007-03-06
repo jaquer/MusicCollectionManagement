@@ -119,6 +119,6 @@ input.rejected[type="radio"]:checked + label {
   background: url("images/radio-rejected.png") no-repeat;
 }
 
-input.undecided[type="radio"]:checked + label {
+input.undefined[type="radio"]:checked + label {
   background: url("images/radio-checked.png") no-repeat;
 }
