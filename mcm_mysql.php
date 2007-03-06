@@ -43,8 +43,7 @@ function get_row_r($result) {
 function mcm_lookup_item($args) {
 
   /* this function should check is all required params have been passed */
-  
-  extract($args, EXTR_PREFIX_ALL, 'arg'););
+  extract($args, EXTR_PREFIX_ALL, 'arg');
 
   $flags = Array();
   if ($arg_log) $flags[] = "LOG";
@@ -57,13 +56,13 @@ function mcm_lookup_item($args) {
   
   $row = get_row_q($lookup_query);
   
-  if ($row && $update) {
+  if ($row && $arg_update) {
     
     $query = "UPDATE mdb_item SET item_flags = \"${flags}\" WHERE item_id = ${row['item_id']}";
     do_query($query);
     
   }
-  elseif (!$row && $insert) {
+  elseif (!$row && $arg_insert) {
     
     $insert_query = "INSERT INTO mdb_item (artist_name, album_name, item_quality, item_flags, item_added) 
                      VALUES(\"${arg_artist_name}\", \"${arg_album_name}\", \"${arg_item_quality}\", \"${flags}\", NOW())";
@@ -136,7 +135,6 @@ function mcm_lookup_itemlist_count($args) {
       
   }
   
-
   $row = get_row_q($query);
   
   return $row['num_items'];
