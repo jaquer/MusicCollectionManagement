@@ -65,7 +65,7 @@ if (!file_exists($playlist_path) || !is_dir($stream_path)) {
 }
 
 ?>
-<object type="application/x-shockwave-flash" width="100%" height="100%" 
-  data="<?php echo $mcm['url_path'] ?>/web_player.swf?playlist_url=<?php echo $playlist_url ?>&autoplay=true">
-  <param name="movie" value="<?php echo $mcm['url_path'] ?>/web_player.swf?playlist_url=<?php echo $playlist_url ?>&autoplay=true">
+<object type="application/x-shockwave-flash" width="200" height="220" 
+  data="<?php echo $mcm['url_path'] ?>/web_player.swf" flashvars="file=<?php echo $playlist_url ?>&autostart=true&showdigits=false&overstretch=false&shuffle=false&repeat=list">
+  <!-- param name="movie" value="<?php echo $mcm['url_path'] ?>/web_player.swf?playlist_url=<?php echo $playlist_url ?>&autoplay=true" -->
 </object>
