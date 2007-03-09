@@ -97,7 +97,7 @@ function generate_create_list($create, $accepted, $extensions) {
 
   $pwd  = getcwd();
   $root = $mcm['basedir'];
-  $pattern = "{,.}*.{" .$extensions . "}";
+  $pattern = "{.??,}*.{" .$extensions . "}";
   
   foreach ($create as $id) {
   
