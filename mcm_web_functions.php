@@ -166,6 +166,8 @@ function mcm_web_finish_selection() {
 
   global $mcm;
   
+  $_SESSION['status'] = (is_array($_SESSION['status'])) ? $_SESSION['status'] : array();
+  
   foreach ($_SESSION['status'] as $item_id => $item_status) {
   
     do_query("DELETE FROM mdb_status WHERE user_id = ${mcm['user_id']} AND item_id = ${item_id}");
