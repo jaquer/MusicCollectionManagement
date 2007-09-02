@@ -2,6 +2,8 @@
 
 /* mcm_web_functions - functions used in web_ui */
 
+include_once('mcm_web_player.php');
+
 function mcm_web_login() {
 
   if (isset($_SESSION['user_name']) && isset($_SESSION['password'])) {
@@ -121,7 +123,7 @@ function mcm_web_print_table($args) {
             <table class="item-table center no-pad">
               <tr>
                 <td colspan="3" class="cover">
-                  <a href="javascript:player('<?php echo base64_encode($album_dirname); ?>')"><img src="<?php echo $cover_url; ?>"></a>
+                  <?php create_player($album_dirname); ?>
                 </td>
               </tr>
               <tr>
