@@ -39,6 +39,8 @@ function update_user($user) {
   
   if (! $prefs = validate_prefs($prefs)) return;
   
+  posix_seteuid($prefs['pref_sysid']);
+  
   echo "  - current symlinks: ";
   $current = mcm_action('read_symlinks', $prefs['pref_target']);
   echo count($current) . " found\n";
@@ -133,7 +135,6 @@ function make_mcmnew_dir($mcmnew_dir) {
   
 }
 
-
 function update_all_users() {
 
   $users = mcm_action('lookup_all_users');
@@ -149,8 +150,9 @@ function update_all_users() {
 
 function validate_prefs($prefs) {
 
-  $sysinfo = posix_getpwnam($prefs['pref_sysname']);
-  $prefs['pref_sysid'] = $sysinfo['uid']; /* will be empty if  sysname is invalid */
+  $sysinfo = posix_getpwnam($prefs['pref_sysname']); /* returns 'false' if sysname is invalid */
+  if ($sysinfo)
+    $prefs['pref_sysid'] = $sysinfo['uid'];
   
   $target = $prefs['pref_target'];
   if (! is_dir($target)) {

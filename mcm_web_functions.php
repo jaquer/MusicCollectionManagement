@@ -200,6 +200,11 @@ function mcm_web_finish_selection() {
   /* Completely wipe out the session */
   $_SESSION = array();
   session_destroy();
+  
+  /* signal an update */
+  $update_signal = $mcm['path'] . '/_cache/update_signal';
+  touch($update_signal);
+  chmod($update_signal, 666);
 
 }
 
