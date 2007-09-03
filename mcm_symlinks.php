@@ -1,14 +1,27 @@
 <?php
 
-/* mcm_symlinks.php /* read & create symlinks */
+/* mcm_symlinks.php - read, verify, create and delete symlinks */
 
-function mcm_read_symlinks($path) {
+function mcm_verify_symlinks_against_virtualfs($args) {
 
-  $dirs  = array();
-  $paths  = array();
+  global $mcm;
   
-  /* recurse through $path, adding directories to $dirs[] array */
-  $dirs[] = $path;
+  error_reporting(E_ERROR);
+  
+  extract($args, EXTR_PREFIX_ALL, 'arg');
+  /* 
+   * required:
+   *
+   * $arg_path      - base dir
+   * $arg_virtualfs - virtualfs listing
+   *
+   */
+   
+  $root = $mcm['basedir'];
+  $dirs  = array();
+  
+  /* recurse through $arg_path, adding directories to $dirs[] array */
+  $dirs[] = $arg_path;
 
   for ($index = 0; $index < count($dirs); $index++) {
 
@@ -17,23 +30,29 @@ function mcm_read_symlinks($path) {
 
     while ($entry = readdir($handle)) {
 
-      if ( ($entry == ".") || ($entry == "..") ) continue;
+      if (($entry == ".") || ($entry == "..")) continue;
 
       $path = "${current}/${entry}";
       
       if ( is_dir($path) && is_readable($path)) {
         $dirs[] = $path;
+        continue;
       }
       
-      if ( is_link($path) ) {
-      
-        if ($item = lookup_link($path)) {
-        
-          $paths[$item['item_id']] = dirname($path);
-          continue;
+      if ($target = readlink($path)) {      /* read a link's target, returns 'false' if $path is not a symlink */
+        if (strpos($target, $root) === 0) { /* $target falls within mcm's root folder */
+          if (! stat($path)) {              /* broken symlink */
+            echo "      removing broken symlink: ${path}\n";
+            unlink($path);
+          }
           
+          if (($location = array_search($target, $arg_virtualfs)) === FALSE) { /* uh? $target is within $root, but not in virtualfs... nuke it! */
+            echo "      removing extra file: ${path}\n";
+            unlink($path);
+          } else { /* remove from virtualfs listing */
+            unset($arg_virtualfs[$location]);
+          }
         }
-        
       }
       
     }
@@ -42,7 +61,7 @@ function mcm_read_symlinks($path) {
     
   }
   
-  return $paths;
+  return $arg_virtualfs;
   
 }
 

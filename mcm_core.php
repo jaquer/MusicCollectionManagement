@@ -81,9 +81,9 @@ function mcm_action($action, $params = '') {
       include_once('mcm_user.php');
       return mcm_validate_login($params);
       break;
-    case 'read_symlinks':
+    case 'verify_symlinks_against_virtualfs':
       include_once('mcm_symlinks.php');
-      return mcm_read_symlinks($params);
+      return mcm_verify_symlinks_against_virtualfs($params);
       break;
     default:
       echo "unknown core action: ${action}\n";

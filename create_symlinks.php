@@ -20,7 +20,7 @@ if (! mcm_action('validate_login', $user))
   
 update_user($user);
 
-die();
+return;
 
 function update_user($user) {
 
@@ -39,86 +39,80 @@ function update_user($user) {
   
   if (! $prefs = validate_prefs($prefs)) return;
   
+  posix_seteuid(0);
   posix_seteuid($prefs['pref_sysid']);
   
-  echo "  - current symlinks: ";
-  $current = mcm_action('read_symlinks', $prefs['pref_target']);
-  echo count($current) . " found\n";
-  
-  echo "  - accepted items: ";
+  echo "  - creating virtualfs based on accepted items: ";
   $params = array('user_id' => $user['user_id'], 'item_status' => 'accepted', 'item_type' => 'MUSIC');
   $accepted = mcm_action('lookup_itemlist', $params);
+  $virtualfs = create_virtualfs($accepted, $prefs['pref_extensions']);
   echo count($accepted) . "\n";
   
-  echo "  - rejected items: ";
-  $params['item_status'] = 'rejected';
-  $rejected = mcm_action('lookup_itemlist', $params);
-  echo count($rejected) . "\n";
+  echo "  - verifying current symlinks... \n";
+  $create = mcm_action('verify_symlinks_against_virtualfs', array('path' => $prefs['pref_target'], 'virtualfs' => $virtualfs));
   
-  /* sorting (hopefully?) makes diff/intersect faster */
-  ksort($current);
-  ksort($accepted);
-  ksort($rejected);
-  
-  $create = key_diff($accepted, $current);
-  $remove = key_intersect($rejected, $current);
+  echo "  - creating new symlinks: " . count($create) . "\n";
   
   $mcmnew_dir = "${prefs['pref_target']}/_mcmnew";
   
   if (! make_mcmnew_dir($mcmnew_dir))
     return;
   
-  $create_list = generate_create_list($create, $accepted, $prefs['pref_extensions']);
-  
   chdir($mcmnew_dir);
   
-  foreach ($create_list as $item) {
+  $prev_dirname = false;
+  foreach ($create as $item) {
   
-    $dirname = $item['dirname'];
-    $path    = $item['path'];
-    $files   = $item['files'];
+    $dirname  = basename(dirname($item));
+    $filename = basename($item);
     
-    mkdir($dirname);
+    if ($dirname != $prev_dirname) {
+      mkdir($dirname);
+      echo "    ${dirname}\n";
+    }
+    echo "      ${filename}\n";
     
-    foreach ($files as $file)
-      symlink("${path}/${file}", "${dirname}/${file}");
+    symlink($item, $dirname . "/" . $filename);
+    
+    if ($prev_dirname && ($dirname != $prev_dirname))
+      if ($prefs['pref_codepage'] != $mcm['codepage'])
+        system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${prev_dirname}\" >/dev/null 2>&1");
       
-    if ($prefs['pref_codepage'] != $mcm['codepage'])
-      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${dirname}\" >/dev/null 2>&1");
+    $prev_dirname = $dirname;
     
   }
+  if ($prev_dirname)
+    if ($prefs['pref_codepage'] != $mcm['codepage'])
+      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${prev_dirname}\" >/dev/null 2>&1");
   
 }
 
-function generate_create_list($create, $accepted, $extensions) {
+function create_virtualfs($items, $extensions) {
 
   global $mcm;
   
-  $list = array();
-
+  $virtualfs = array();
 
   $pwd  = getcwd();
   $root = $mcm['basedir'];
   $pattern = "{.??,}*.{" .$extensions . "}";
   
-  foreach ($create as $id) {
+  foreach ($items as $item) {
   
-    $item = $accepted[$id];
-    
     $dirname = "[${item['artist_name']}] [${item['album_name']}] [${item['item_quality']}]";
     $path    = "${root}/${dirname}";
     
     chdir($path);
     
-    $files = glob($pattern, GLOB_BRACE);
-    
-    $list[] = array('dirname' => $dirname, 'path' => $path, 'files' => $files);
+    foreach (glob($pattern, GLOB_BRACE) as $file)
+      $virtualfs[] = "${path}/${file}";
     
   }
   
-  chdir($pwd);
+  /* chdir($pwd); */
+  sort($virtualfs);
   
-  return $list;
+  return $virtualfs;
   
 }
 
