@@ -3,11 +3,12 @@
 # cron_update.sh - check if new symlinks need to be created
 #                  should be run periodically via cron
 
-SIGNAL_FILE="_cache/update_signal"
-PROGRESS_FILE="_cache/update_in_progress"
+BASE_DIR="/var/www/music"
+SIGNAL_FILE="${BASE_DIR}/_cache/update_signal"
+PROGRESS_FILE="${BASE_DIR}/_cache/update_in_progress"
 
 PHP="/usr/bin/php"
-SCRIPT="create_symlinks.php"
+SCRIPT="${BASE_DIR}/create_symlinks.php"
 
 if [ -w ${SIGNAL_FILE} -a ! -f ${PROGRESS_FILE} ]; then
 
