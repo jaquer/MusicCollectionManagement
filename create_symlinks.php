@@ -63,27 +63,24 @@ function update_user($user) {
   $prev_dirname = false;
   foreach ($create as $item) {
   
+    $source   = $item;
     $dirname  = basename(dirname($item));
     $filename = basename($item);
+    $dest     = $dirname . "/" . $filename;
+    if ($prefs['pref_codepage'] != $mcm['codepage'])
+      $dest = iconv(strtoupper($mcm['codepage']), strtoupper($prefs['pref_codepage']), $dest);
     
     if ($dirname != $prev_dirname) {
-      mkdir($dirname);
+      mkdir(dirname($dest));
       echo "    ${dirname}\n";
     }
     echo "      ${filename}\n";
     
-    symlink($item, $dirname . "/" . $filename);
+    symlink($item, $dest);
     
-    if ($prev_dirname && ($dirname != $prev_dirname))
-      if ($prefs['pref_codepage'] != $mcm['codepage'])
-        system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${prev_dirname}\" >/dev/null 2>&1");
-      
     $prev_dirname = $dirname;
     
   }
-  if ($prev_dirname)
-    if ($prefs['pref_codepage'] != $mcm['codepage'])
-      system("/usr/bin/convmv --notest -r -f ${mcm['codepage']} -t ${prefs['pref_codepage']} --exec \"mv #1 #2\" \"${prev_dirname}\" >/dev/null 2>&1");
   
 }
 
