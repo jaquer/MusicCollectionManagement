@@ -40,7 +40,8 @@ foreach ($itemlist as $item) {
   
 }
 
-if ( $count = (mcm_action('lookup_last_item') - $last_item)) {
+if (0) {
+//if ($count = (mcm_action('lookup_last_item') - $last_item)) {
 
   echo "  " . $count . " new items found - notifying users\n";
 
@@ -54,7 +55,13 @@ if ( $count = (mcm_action('lookup_last_item') - $last_item)) {
       $email = $user['user_email'];
       
       $message = "Hello ${name}.\n\n";
-      $message .= "This is a reminder that there are new albums to be reviewed since the last time you visited the site.\n\n";
+      $message .= "This is a reminder that there";
+      if ($count == 1) {
+        $message .= " is one new album ";
+      } else {
+        $message .= " are " . $count . " new albums ";
+      }
+      $message .= "to be reviewed since the last time you visited the site.\n\n";
       $message .= "Please stop by http://lisa/music to decide if you want these new albums added to your music directory.\n\n";
       $message .= "-- \n";
       $message .= "The Management";
