@@ -9,6 +9,7 @@ PROGRESS_FILE="${BASE_DIR}/_cache/update_in_progress"
 
 PHP="/usr/bin/php"
 SCRIPT="${BASE_DIR}/create_symlinks.php"
+UPDATEDB="${BASE_DIR}/update_db.php"
 
 if [ -w ${SIGNAL_FILE} -a ! -f ${PROGRESS_FILE} ]; then
 
@@ -22,3 +23,5 @@ if [ -w ${SIGNAL_FILE} -a ! -f ${PROGRESS_FILE} ]; then
   rm ${PROGRESS_FILE}
   
 fi
+
+${PHP} ${UPDATEDB}
