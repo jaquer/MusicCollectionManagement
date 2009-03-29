@@ -8,6 +8,7 @@ function mcm_open_db() {
   
   mysql_connect($mcm['db_server'], $mcm['db_username'], $mcm['db_password']) or die ("Unable to connect to database server.\n");
   mysql_select_db($mcm['db_database']) or die ("Unable to open database.\n");
+  mysql_set_charset('utf8');
   
 }
 
