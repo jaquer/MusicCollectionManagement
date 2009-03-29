@@ -4,82 +4,88 @@ table, td {
 }
 /**/
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 1.25em;
+  padding: .25em 0 0 .25em;
+}
+
+hr {
+  padding-bottom: 0.5em;
+}
+
 body {
   font-family: Arial, sans-serif;
-  font-size: 10pt;
+  font-size: .75em;
 }
 
 table#list {
-	width: 98%;
-	border: 1px solid #000;
+  width: 98%;
 }
 
 table.center {
-	margin-left: auto;
-	margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 table.no-pad {
-	border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 /* WhyTF doesn't this work? */
 table.item-table {
-	height: 100%;
+  height: 100%;
 }
 
-
 td.item {
-	width: 25%;
-	padding-bottom: 1em;
-	vertical-align: bottom;
+  width: 25%;
+  padding-bottom: 1em;
+  vertical-align: bottom;
 }
 
 td.cover, td.artist, td.album {
-	text-align: center;
-	font-size: 80%;
+  text-align: center;
+  font-size: 80%;
 }
 
 td.cover {
-	vertical-align: top;
+  vertical-align: top;
 }
 
 td.artist {
-	font-weight: bold;
-}
-
-.choice input {
-	vertical-align: text-bottom;
+  font-weight: bold;
 }
 
 td.choice {
-	text-align: right;
-	/* font-size: 70%; */
+  text-align: right;
 }
 
-/*
-td.choice input {
-	vertical-align: text-bottom;
-}
-*/
-
-table#navigation {
-	width: 98%;
+td.choice label {
+  padding-bottom: 20px;
+  font-size: 75%;
 }
 
-td#prev {
-	width: 33%;
-	text-align: left;
+table.navigation {
+  width: 98%;
 }
 
-td#finish {
-	width: 34%;
-	text-align: center;
+td.prev {
+  width: 45%;
+  text-align: right;
 }
 
-td#next {
-	width: 33%;
-	text-align: right;
+td.finish {
+  width: 10%;
+  text-align: center;
+}
+
+td.next {
+  width: 45%;
+  text-align: left;
 }
 
 a:link img, a:visited img {
@@ -89,6 +95,7 @@ a:link img, a:visited img {
 a:hover img {
   border: 3px solid #99CCFF;
 }
+
 
 #last-visit {
   font-size: 70%;
@@ -107,7 +114,7 @@ input[type="radio"] {
 
 input[type="radio"] + label {
   padding-left: 20px;
-  height: 16px; /* this seems to be ignored by FF :/ */
+  /* height: 16px; /* this seems to be ignored by FF :/ */
   background: url("images/radio.png") no-repeat;
 }
 
