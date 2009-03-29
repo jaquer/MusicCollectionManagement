@@ -61,8 +61,12 @@ function mcm_web_record_selections() {
 
   foreach($_POST as $key => $value) {
   
-    if ((substr($key, 0, 2) == 'id') && ($value != 'undefined')) {
-      $_SESSION['status'][substr($key, 2)] = $value;
+    if (substr($key, 0, 2) == 'id') {
+      if (($value == 'accepted') || ($value == 'rejected')) {
+        $_SESSION['status'][substr($key, 2)] = $value;
+      } elseif (($value == 'undefined') && (isset($_SESSION['status'][substr($key, 2)]))) {
+        unset($_SESSION['status'][substr($key, 2)]);
+      }
     }
       
   }
@@ -84,7 +88,7 @@ function mcm_web_print_table($args) {
    *
    */
   
-  $limit = 20; /* TODO: set this as a config option */
+  $limit = 12; /* TODO: set this as a config option */
   $start = $arg_start;
   
   $start = ($arg_action == 'next') ? $start + $limit : $start;
@@ -101,7 +105,8 @@ function mcm_web_print_table($args) {
   
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
-      <table width="98%">
+<?php print_navigation($start, $limit, $num_items); ?>
+      <table id="list" class="center">
         <input type="hidden" name="start" value="<?php echo $start; ?>">
         <input type="hidden" name="item_status" value="<?php echo $arg_item_status; ?>">
         <input type="hidden" name="item_type" value="<?php echo $arg_item_type; ?>">
@@ -110,6 +115,11 @@ function mcm_web_print_table($args) {
   $row_number = 0;
 
   foreach ($items_list as $id => $row) {
+
+    /* load current item status from db into session */
+    if (($arg_item_status != 'undefined') && (! isset($_SESSION['status'][$id]))) {
+      $_SESSION['status'][$id] = $arg_item_status;
+    }
   
     $row_number++;
   
@@ -127,10 +137,10 @@ function mcm_web_print_table($args) {
                 </td>
               </tr>
               <tr>
-                <td colspan="3" class="artist"><?php echo htmlentities($row['artist_name']); ?></td>
+                <td colspan="3" class="artist"><?php echo htmlentities($row['artist_name'], ENT_COMPAT, 'UTF-8'); ?></td>
               </tr>
               <tr>
-                <td colspan="3" class="album"><?php echo htmlentities($row['album_name']); ?></td>
+                <td colspan="3" class="album"><?php echo htmlentities($row['album_name'], ENT_COMPAT, 'UTF-8'); ?></td>
              </tr>
              <tr>
                 <td class="choice accepted"><input class="accepted" id="id<?php echo $id; ?>-accepted" type="radio" name="id<?php echo $id; ?>" value="accepted"<?= print_checkbox($id, 'accepted'); ?>><label for="id<?php echo $id; ?>-accepted">add</label></td>
@@ -150,13 +160,7 @@ function mcm_web_print_table($args) {
 ?>
 
       </table>
-      <table id="navigation" class="center">
-        <tr> 
-          <td id="prev"><?= ($start - $limit >= 0) ? '<input type="submit" name="submit" value="Prev">' : ''; ?></td>
-          <td id="finish"><input type="submit" name="submit" value="Finish"></td>
-          <td id="next"><?= ($start + $limit <= $num_items) ? '<input type="submit" name="submit" value="Next">' : '' ?></td>
-        </tr>
-      </table>
+<?php print_navigation($start, $limit, $num_items); ?>
   </form>
 <?php
 
@@ -192,7 +196,6 @@ function mcm_web_finish_selection() {
   do_query($query);
   
 ?>
-
     <p>The items you have selected have been queued. They will appear on your collection shortly.</p>
     <form method="post" action="<?= $mcm['self'] ?>">
       <input type="submit" name="finished" value="Click here to finish process">
@@ -220,6 +223,18 @@ function print_checkbox($id, $value) {
     return " checked";
   }
   
+}
+
+function print_navigation($start, $limit, $num_items) {
+?>
+      <table class="navigation center">
+        <tr> 
+          <td class="prev"><?= ($start - $limit >= 0) ? '<input type="image" src="images/prev.png" name="submit" value="prev">' : ''; ?></td>
+          <td class="finish"><input type="submit" name="submit" value="Finish"></td>
+          <td class="next"><?= ($start + $limit <= $num_items) ? '<input type="image" src="images/next.png" name="submit" value="next">' : '' ?></td>
+        </tr>
+      </table>
+<?php
 }
 
 function mcm_create_cover_url($album_dirname) {
