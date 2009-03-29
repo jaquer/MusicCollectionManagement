@@ -24,8 +24,8 @@ function create_player($album_dirname) {
     $playlist .= "<playlist version=\"0\" xmlns = \"http://xspf.org/ns/0/\">\n";
     $playlist .= "<title>" . utf8_encode($album_dirname) . "</title>\n";
   
-    chdir($full_path);
     $img = mcm_action('create_cover_url', $album_dirname);
+    chdir($full_path);
     $mp3s = glob("*.mp3");
   
     mkdir($stream_path);
@@ -52,7 +52,7 @@ function create_player($album_dirname) {
     }
     
     $playlist .= "  </trackList>\n";
-    $playlist .= "<playlist>\n";
+    $playlist .= "</playlist>\n";
     
     $hnd = fopen($playlist_path, 'w');
     fwrite($hnd, $playlist);
@@ -74,3 +74,4 @@ function create_player($album_dirname) {
 }
 
 ?>
+
