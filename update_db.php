@@ -40,8 +40,7 @@ foreach ($itemlist as $item) {
   
 }
 
-if (0) {
-//if ($count = (mcm_action('lookup_last_item') - $last_item)) {
+if ($count = (mcm_action('lookup_last_item') - $last_item)) {
 
   echo "  " . $count . " new items found - notifying users\n";
 
@@ -62,7 +61,7 @@ if (0) {
         $message .= " are " . $count . " new albums ";
       }
       $message .= "to be reviewed since the last time you visited the site.\n\n";
-      $message .= "Please stop by http://lisa/music to decide if you want these new albums added to your music directory.\n\n";
+      $message .= "Please stop by http://frink/music to decide if you want these new albums added to your music directory.\n\n";
       $message .= "-- \n";
       $message .= "The Management";
       
