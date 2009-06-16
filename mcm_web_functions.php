@@ -209,7 +209,7 @@ function mcm_web_finish_selection() {
   /* signal an update */
   $update_signal = $mcm['path'] . '/_cache/update_signal';
   touch($update_signal);
-  chmod($update_signal, 666);
+  chmod($update_signal, 0666);
 
 }
 
