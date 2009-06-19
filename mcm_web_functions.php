@@ -81,6 +81,7 @@ function mcm_web_print_table($args) {
    */
   
   $limit = 12; /* TODO: set this as a config option */
+  $table_cols = 4;
   $start = $arg_start;
   
   $start = ($arg_action == 'next') ? $start + $limit : $start;
@@ -118,7 +119,7 @@ function mcm_web_print_table($args) {
     $album_dirname = "[${row['artist_name']}] [${row['album_name']}] [${row['item_quality']}]";
     $cover_url = mcm_action('create_cover_url', $album_dirname);
     
-    echo (($row_number - 1) % 4 == 0) ? "       <tr>\n" : "";
+    echo (($row_number - 1) % $table_cols == 0) ? "       <tr>\n" : "";
     
 ?>
           <td class="item">
@@ -143,11 +144,11 @@ function mcm_web_print_table($args) {
           </td>
 <?php
 
-    echo ($row_number % 4 == 0) ? "       </tr>\n" : "";
+    echo ($row_number % $table_cols == 0) ? "       </tr>\n" : "";
   
   }
   
-  echo ($row_number % 4 != 0) ? "     </tr>\n" : "";
+  echo ($row_number % $table_cols != 0) ? "     </tr>\n" : "";
   
 ?>
 
