@@ -21,8 +21,6 @@ function mcm_web_login() {
 function mcm_web_login_form($args) {
 
   global $mcm;
-  extract($args, EXTR_PREFIX_ALL, 'arg');
-  /* arg_advanced - flag to output advanced login options */
   
 ?>
     <fieldset>
@@ -30,12 +28,9 @@ function mcm_web_login_form($args) {
       <form method="post" action="<?php echo $mcm['self']; ?>">
         <p>Username: <input type="text" name="user_name" size="15" value="<?php echo $mcm['user_name']; ?>"></p>
         <p>Password: <input type="password" name="password" size=15></p>
-<?php
-
-  if ($arg_advanced) {
-
-?>
-        <p>Review 
+        <p><input type="submit" name="submit" value="Enter"></p>
+        <p id="show-advanced"><a href="#" onmousedown="showAdvanced();">Advanced options</a></p>
+        <p id="advanced">Review 
           <select name="item_status">
             <option value="undefined" selected>undefined</option>
             <option value="accepted">accepted</option>
@@ -48,12 +43,6 @@ function mcm_web_login_form($args) {
           </select>
           items.
         </p>
-<?php
-
-  }
-
-?>
-        <p><input type="submit" name="submit" value="Enter"><?php if (!$arg_advanced) echo ' <a style="font-size: 80%;" href="?advanced=true">advanced</a>'; ?></p>
       </form>
     </fieldset>
 <?php

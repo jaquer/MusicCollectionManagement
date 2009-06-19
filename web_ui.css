@@ -42,6 +42,10 @@ fieldset p {
   line-height: 2.5em;
 }
 
+fieldset p#advanced {
+  display: none;
+}
+
 table#list {
   width: 98%;
 }
