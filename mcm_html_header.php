@@ -15,7 +15,6 @@ function mcm_html_header($params) {
   </head>
   <body>
     <h1>Music Collection Management</h1>
-    <hr>
 <?php
 
 }

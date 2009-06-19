@@ -25,34 +25,37 @@ function mcm_web_login_form($args) {
   /* arg_advanced - flag to output advanced login options */
   
 ?>
-    <form method="post" action="<?php echo $mcm['self']; ?>">
-      <p>Username: <input type="text" name="user_name" size="15" value="<?php echo $mcm['user_name']; ?>"></p>
-      <p>Password: <input type="password" name="password" size=15></p>
+    <fieldset>
+      <legend>Login</legend>
+      <form method="post" action="<?php echo $mcm['self']; ?>">
+        <p>Username: <input type="text" name="user_name" size="15" value="<?php echo $mcm['user_name']; ?>"></p>
+        <p>Password: <input type="password" name="password" size=15></p>
 <?php
 
   if ($arg_advanced) {
 
 ?>
-      <p>Review 
-        <select name="item_status">
-          <option value="undefined" selected>undefined</option>
-          <option value="accepted">accepted</option>
-          <option value="rejected">rejected</option>
-        </select>
-        <select name="item_type">
-          <option value="music" selected>music</option>
-          <option value="audiobook">audio book</option>
-          <option value="dupe">duplicate</option>
-        </select>
-        items.
-      </p>
+        <p>Review 
+          <select name="item_status">
+            <option value="undefined" selected>undefined</option>
+            <option value="accepted">accepted</option>
+            <option value="rejected">rejected</option>
+          </select>
+          <select name="item_type">
+            <option value="music" selected>music</option>
+            <option value="audiobook">audio book</option>
+            <option value="dupe">duplicate</option>
+          </select>
+          items.
+        </p>
 <?php
 
   }
 
 ?>
-      <p><input type="submit" name="submit" value="Enter"><?php if (!$arg_advanced) echo ' <a style="font-size: 80%;" href="?advanced=true">advanced</a>'; ?></p>
-    </form>
+        <p><input type="submit" name="submit" value="Enter"><?php if (!$arg_advanced) echo ' <a style="font-size: 80%;" href="?advanced=true">advanced</a>'; ?></p>
+      </form>
+    </fieldset>
 <?php
 
 }

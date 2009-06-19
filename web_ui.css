@@ -10,17 +10,36 @@ table, td {
 }
 
 h1 {
-  font-size: 1.25em;
-  padding: .25em 0 0 .25em;
+  font-size: 3em;
+  letter-spacing: -0.05em;
+  text-align: center;
+  margin: 0.25em auto;
+  font-variant: small-caps;
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+  width: 50%;
 }
 
 hr {
-  padding-bottom: 0.5em;
+  margin: 0 auto;
+  width: 95%;
+  border: 2px solid #000;
 }
 
 body {
   font-family: Arial, sans-serif;
   font-size: .75em;
+}
+
+fieldset {
+  margin: 2em auto;
+  padding: 1em;
+  width: 25%;
+}
+
+fieldset p {
+  text-align: right;
+  line-height: 2.5em;
 }
 
 table#list {
