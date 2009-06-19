@@ -11,7 +11,7 @@ function mcm_html_header($params) {
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Music Collection Management</title>
     <link href="web_ui.css" rel="stylesheet" type="text/css">
-    <script lang="javascript" src="web_ui.js"></script>
+    <script lang="javascript" src="web_ui.js" type="text/javascript"></script>
   </head>
   <body>
     <h1>Music Collection Management</h1>
