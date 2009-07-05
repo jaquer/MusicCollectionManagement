@@ -40,15 +40,18 @@ fieldset {
 fieldset p {
   text-align: right;
   line-height: 2.5em;
+
 }
 
 fieldset p#advanced {
   display: none;
 }
 
+/*
 table#list {
   width: 98%;
 }
+*/
 
 table.center {
   margin-left: auto;
@@ -65,7 +68,7 @@ table.item-table {
 }
 
 td.item {
-  width: 25%;
+  /*width: 25%;*/
   padding-bottom: 1em;
   vertical-align: bottom;
 }
@@ -79,6 +82,17 @@ td.cover {
   vertical-align: top;
 }
 
+td.cover img {
+  width: 150px;
+  height: auto;
+}
+
+td.cover .cover-image {
+  width: 155px;
+  height: 155px;
+  overflow: hidden;
+}
+
 td.artist {
   font-weight: bold;
 }
@@ -89,7 +103,8 @@ td.choice {
 
 td.choice label {
   padding-bottom: 20px;
-  font-size: 75%;
+  font-size: 90%;
+  font-weight: bold;
 }
 
 table.navigation {

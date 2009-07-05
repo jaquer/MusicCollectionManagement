@@ -80,7 +80,7 @@ function mcm_web_print_table($args) {
    *
    */
   
-  $limit = 12; /* TODO: set this as a config option */
+  $limit = 8; /* TODO: set this as a config option */
   $table_cols = 4;
   $start = $arg_start;
   
@@ -98,7 +98,7 @@ function mcm_web_print_table($args) {
   
 ?>
     <form method="post" action="<?php echo $mcm['self']; ?>">
-<?php print_navigation($start, $limit, $num_items); ?>
+<?php // print_navigation($start, $limit, $num_items); ?>
       <table id="list" class="center">
         <input type="hidden" name="start" value="<?php echo $start; ?>">
         <input type="hidden" name="item_status" value="<?php echo $arg_item_status; ?>">
@@ -126,19 +126,22 @@ function mcm_web_print_table($args) {
             <table class="item-table center no-pad">
               <tr>
                 <td colspan="3" class="cover">
-                  <?php create_player($album_dirname); ?>
+                  <div class="cover-image">
+                  <a href="#"><img src="<?php echo $cover_url; ?>"></a>
+                  </div>
+                  <?php // create_player($album_dirname); ?>
                 </td>
               </tr>
-              <tr>
+              <!-- tr>
                 <td colspan="3" class="artist"><?php echo htmlentities($row['artist_name'], ENT_COMPAT, 'UTF-8'); ?></td>
               </tr>
               <tr>
                 <td colspan="3" class="album"><?php echo htmlentities($row['album_name'], ENT_COMPAT, 'UTF-8'); ?></td>
-             </tr>
+             </tr -->
              <tr>
-                <td class="choice accepted"><input class="accepted" id="id<?php echo $id; ?>-accepted" type="radio" name="id<?php echo $id; ?>" value="accepted"<?= print_checkbox($id, 'accepted'); ?>><label for="id<?php echo $id; ?>-accepted">add</label></td>
-                <td class="choice rejected"><input class="rejected" id="id<?php echo $id; ?>-rejected" type="radio" name="id<?php echo $id; ?>" value="rejected"<?= print_checkbox($id, 'rejected'); ?>><label for="id<?php echo $id; ?>-rejected">remove</label></td>
-                <td class="choice undefined"><input class="undefined" id="id<?php echo $id; ?>-undefined" type="radio" name="id<?php echo $id; ?>" value="undefined"<?= print_checkbox($id, 'undefined'); ?>><label for="id<?php echo $id; ?>-undefined">unsure</label></td>
+                <td class="choice accepted"><input class="accepted" id="id<?php echo $id; ?>-accepted" type="radio" name="id<?php echo $id; ?>" value="accepted"<?= print_checkbox($id, 'accepted'); ?>><label for="id<?php echo $id; ?>-accepted"> + </label></td>
+                <td class="choice rejected"><input class="rejected" id="id<?php echo $id; ?>-rejected" type="radio" name="id<?php echo $id; ?>" value="rejected"<?= print_checkbox($id, 'rejected'); ?>><label for="id<?php echo $id; ?>-rejected"> - </label></td>
+                <td class="choice undefined"><input class="undefined" id="id<?php echo $id; ?>-undefined" type="radio" name="id<?php echo $id; ?>" value="undefined"<?= print_checkbox($id, 'undefined'); ?>><label for="id<?php echo $id; ?>-undefined"> ? </label></td>
              </tr>
             </table>
           </td>
