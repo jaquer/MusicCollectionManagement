@@ -34,6 +34,23 @@ function clickRadio(sId, sState) {
     }
 }
 
+// Code from http://dynamic-tools.net/toolbox/isMouseLeaveOrEnter/
+function isMouseLeaveOrEnter (e, handler) { 
+    if (e.type != 'mouseout' && e.type != 'mouseover')
+        return false;
+
+    var reltg = e.relatedTarget
+        ? e.relatedTarget
+        : e.type == 'mouseout'
+            ? e.toElement
+            : e.fromElement;
+
+    while (reltg && reltg != handler)
+        reltg = reltg.parentNode;
+
+    return (reltg != handler);
+}
+
 function showOverlay(sId) {
     document.getElementById(sId + '-overlay').style.display = 'inline';
     

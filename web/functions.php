@@ -125,7 +125,7 @@ function mcm_web_print_table($args) {
                     <td class="item" id="id<?php echo $id; ?>-item">
                         <div id="id<?php echo $id; ?>-artist" class="artist"><?php echo $row['artist_name']; ?></div>
                         <div id="id<?php echo $id; ?>-album" class="album"><?php echo $row['album_name']; ?></div>
-                        <div class="cover-container" onmouseover="showOverlay('id<?php echo $id; ?>')" onmouseout="hideOverlay('id<?php echo $id; ?>')">
+                        <div class="cover-container" onmouseover="if (isMouseLeaveOrEnter(event, this)) showOverlay('id<?php echo $id; ?>')" onmouseout="if (isMouseLeaveOrEnter(event, this)) hideOverlay('id<?php echo $id; ?>')">
                             <a href="#" onmousedown="loadPlaylist('<?php echo $playlist_url; ?>', '<?php echo $cover_url; ?>'); return false;">
                                 <img id="id<?php echo $id; ?>-overlay" src="images/overlay.png" class="overlay" alt="">
                                 <img id="id<?php echo $id; ?>-cover" src="<?php echo $cover_url; ?>" class="cover<?php  print_cover_class($id, $_SESSION['status'][$id]); ?>" alt="album cover" width="150" height="150">
