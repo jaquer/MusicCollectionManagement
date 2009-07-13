@@ -26,9 +26,13 @@ switch($action) {
     mcm_action('web_record_selections');
     mcm_action('web_finish_selection');
     break;
+  case 'exit':
+    mcm_action('web_exit_without_saving');
+    break;
   case 'enter':
   case 'next':
   case 'prev':
+  default:
     mcm_action('web_record_selections');
     mcm_action('web_print_table', array('action' => $action, 'start' => $start, 'item_status' => $item_status, 'item_type' => $item_type));
     break;

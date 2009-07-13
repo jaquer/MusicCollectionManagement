@@ -227,7 +227,7 @@ function mcm_web_finish_selection() {
   do_query($query);
   
 ?>
-<div id="signoff" class="center">
+<div id="signoff" class="center save">
     <p class="bold">Process complete.</p>
     <p>The albums you have selected will be added or removed shortly.</p>
     <p>You can now close this window or return to the homepage.</p>
@@ -245,6 +245,23 @@ function mcm_web_finish_selection() {
   chmod($update_signal, 0666);
 
 }
+
+function mcm_web_exit_without_saving() {
+?>
+<div id="signoff" class="center cancel">
+    <p class="bold">Process cancelled.</p>
+    <p>You have selected to exit without saving. No selections will be recorded.</p>
+    <p>You can now close this window or return to the homepage.</p>
+    <div id="home-link"><a href="">Return to Homepage <img src="images/home.png" alt="Home" title="Return to Homepage"></a></div>
+</div>
+<?php
+
+  /* Completely wipe out the session */
+  $_SESSION = array();
+  session_destroy();
+
+}
+
 
 function print_checkbox($id, $value) {
 

@@ -199,9 +199,17 @@ body {
 
 #signoff {
     margin-top: 2em;
-    border: 1px solid black;
+    border: 3px solid;
     padding: 0 0.75em;
     width: 25em;
+}
+
+#signoff.save {
+    border-color: limegreen;
+}
+
+#signoff.cancel {
+    border-color: tomato;
 }
 
 #home-link {
