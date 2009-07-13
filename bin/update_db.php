@@ -10,7 +10,7 @@ if (strcmp(PHP_SAPI, 'cli') != 0) {
   die("this script can only be called from the command line - exiting\n");
 }
 
-require_once('mcm_core.php');
+require_once('../core/init.php');
 
 if (posix_geteuid() != 0) {
   if (! isset($mcm['userupdate'])) {

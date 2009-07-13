@@ -3,7 +3,7 @@
 /* web_ui.php - web user interface for choosing albums */
 /*              this can be renamed/symlinked to index.php */
 
-require_once('mcm_core.php');
+require_once('../core/init.php');
 
 mcm_action('html_header');
 

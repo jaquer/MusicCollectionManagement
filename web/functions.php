@@ -2,7 +2,7 @@
 
 /* mcm_web_functions - functions used in web_ui */
 
-include_once('mcm_web_player.php');
+include_once('player.php');
 
 function mcm_web_login() {
 
@@ -238,7 +238,7 @@ function mcm_create_cover_url($album_dirname) {
   global $mcm;
   
   $checksum = md5($album_dirname);
-  $cache    = "/_cache/cover/${checksum}.jpg";
+  $cache    = "_cache/cover/${checksum}.jpg";
   $cache_path = "${mcm['path']}/${cache}";
   $cache_url  = "${mcm['url_path']}/${cache}";
   
