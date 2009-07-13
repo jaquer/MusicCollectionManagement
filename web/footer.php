@@ -7,7 +7,7 @@ function mcm_html_footer($params) {
   if ($params) echo '    <p id="last-visit">' . $params['user_name'] . ' &bull; last visit: ' . $params['last_visit'] . '</p>';
 ?>
 
-  </body>
+</body>
 </html>
 <?php
 

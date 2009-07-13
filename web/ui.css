@@ -1,171 +1,244 @@
-/* debug
-table, td {
-	border: 1px solid black;
-}
-/**/
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-h1 {
-  font-size: 3em;
-  letter-spacing: -0.05em;
-  text-align: center;
-  margin: 0.25em auto;
-  font-variant: small-caps;
-  font-weight: bold;
-  border-bottom: 2px solid #000;
-  width: 50%;
-}
-
-hr {
-  margin: 0 auto;
-  width: 95%;
-  border: 2px solid #000;
-}
-
 body {
-  font-family: Arial, sans-serif;
-  font-size: .75em;
+    font-family: verdana, arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 60em; /* About 960px with default font size of 16px */
+    position: relative;
 }
 
-fieldset {
-  margin: 2em auto;
-  padding: 1em;
-  width: 25%;
+#header {
+    display: table;
+    margin-top: 0;
+    margin-bottom: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    text-align: center;
+    font-size: 1.5em;
+    letter-spacing: -0.05em;
+    font-variant: small-caps;
+    border-bottom: 2px solid black;
 }
 
-fieldset p {
-  text-align: right;
-  line-height: 2.5em;
-
+#login-form {
+    padding: 1em;
+    width: 26em;
+    font-size: 0.75em;
 }
 
-fieldset p#advanced {
-  display: none;
+#login-form fieldset {
+    padding-bottom: 0;
 }
 
-/*
-table#list {
-  width: 98%;
-}
-*/
-
-table.center {
-  margin-left: auto;
-  margin-right: auto;
+#login-form p {
+    text-align: right;
 }
 
-table.no-pad {
-  border-collapse: collapse;
+#login-form #show-advanced {
+    /* prevents a "jump" when advanced options show */
+    line-height: 2em;
 }
 
-/* WhyTF doesn't this work? */
-table.item-table {
-  height: 100%;
+#login-form #advanced {
+    line-height: 2em;
+    display: none;
 }
 
-td.item {
-  /*width: 25%;*/
-  padding-bottom: 1em;
-  vertical-align: bottom;
+.nav {
+    width: 5em;
+    min-width: 5em;
 }
 
-td.cover, td.artist, td.album {
-  text-align: center;
-  font-size: 80%;
+#nav-left {
+    text-align: right;
 }
 
-td.cover {
-  vertical-align: top;
+#nav-right {
+    text-align: left;
 }
 
-td.cover img {
-  width: 150px;
-  height: auto;
+#list {
+    border-collapse: collapse;
 }
 
-td.cover .cover-image {
-  width: 155px;
-  height: 155px;
-  overflow: hidden;
+#list .item {
+    width: 164px; /* 150px cover + 2x2px padding + 2x5px border */
+    text-align: center;
 }
 
-td.artist {
-  font-weight: bold;
+.item .artist, .item .album {
+    display: none;
 }
 
-td.choice {
-  text-align: right;
+.item .cover-container {
+    position: relative;
+    width: 164px;
+    height: 164px;
 }
 
-td.choice label {
-  padding-bottom: 20px;
-  font-size: 90%;
-  font-weight: bold;
+.cover-container .overlay {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    display: none;
 }
 
-table.navigation {
-  width: 98%;
-  margin-top: 1em;
-  margin-bottom: 1em;
+.cover-container .cover {
+    padding: 2px;
+    border: 5px solid;
 }
 
-td.prev {
-  width: 45%;
-  text-align: right;
+.cover-container .cover-add {
+    border-color: limegreen;
 }
 
-td.finish {
-  width: 10%;
-  text-align: center;
+.cover-container .cover-rem {
+    border-color: tomato;
 }
 
-td.next {
-  width: 45%;
-  text-align: left;
+.cover-container .cover-und {
+    border-color: transparent;
 }
 
-a:link img, a:visited img {
-  border: 3px solid #FFFFFF;
+.item .choices {
+    margin: 2px 4px 0 4px;
+    text-align: right;
 }
 
-a:hover img {
-  border: 3px solid #99CCFF;
+.choices input {
+    display: none;
 }
 
-
-#last-visit {
-  font-size: 70%;
-  text-align: right;
+.choices img {
+    vertical-align: top;
 }
 
-/* neat trick from http://pdatabase.dyndns.biz/tutorial02.php */
-
-input[type="radio"] {
-  visibility: hidden;
-  width: 0px;
-  height: 0px;
-  padding: 0px;
-  margin: 0px;
+#selected-artist, #selected-album {
+    text-align: center;
 }
 
-input[type="radio"] + label {
-  padding-left: 20px;
-  /* height: 16px; /* this seems to be ignored by FF :/ */
-  background: url("images/radio.png") no-repeat;
+#selected-artist {
+    height: 1.5em;
+    font-size: 0.5em;
 }
 
-input.accepted[type="radio"]:checked + label {
-  background: url("images/radio-accepted.png") no-repeat;
+#selected-album {
+    font-size: 0.75em;
+    font-weight: bold;
+    height: 1.25em;
 }
 
-input.rejected[type="radio"]:checked + label {
-  background: url("images/radio-rejected.png") no-repeat;
+#player-table {
+    margin-top: 0.2em;
+    width: 30em;
+    border-collapse: collapse;
 }
 
-input.undefined[type="radio"]:checked + label {
-  background: url("images/radio-checked.png") no-repeat;
+#player-cover-container {
+    width: 105px;
+    height: 105px;
+    padding: 0;
+    text-align: center;
+    vertical-align: top;
 }
+    
+#player-cover {
+    border: 2px solid black;
+}
+
+#player-controls {
+    text-align: center;
+    vertical-align: top;
+}
+
+#player-meta {
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    vertical-align: top;
+}
+
+#player-artist {
+    font-size: 0.75em;
+}
+
+#player-album {
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 0.25em;
+}
+
+#player-title {
+    font-size: 1.25em;
+    font-weight: bold;
+    text-shadow: gray 1px 1px 1px;
+    margin-top: 0.1em;
+}
+
+#player-next {
+    font-size: 1em;
+    margin-top: 0.25em;
+}
+
+#player-next-title {
+    font-style: italic;
+}
+
+#player-artist, #player-album, #player-title, #player-next {
+    overflow: hidden;
+}
+
+#toolbar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    height: 32px;
+}
+
+#toolbar img, #toolbar input {
+    vertical-align: middle;
+}
+
+#signoff {
+    margin-top: 2em;
+    border: 1px solid black;
+    padding: 0 0.75em;
+    width: 25em;
+}
+
+#home-link {
+    border: 1px solid blue;
+    padding: 0.25em 0.5em;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+#home-link img {
+    vertical-align: text-bottom;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+a:link, a:visited, a:active {
+    color: blue;
+    text-decoration: none;
+}
+
+a img {
+    border: none;
+}
+
+a:focus, input:focus {
+    outline-style: none;
+}
+
+.dbg {
+    border: 1px solid magenta;
+}
+

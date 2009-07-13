@@ -6,6 +6,8 @@ function create_player($album_dirname) {
 
   global $mcm;
 
+  $cwd = getcwd();
+
   $full_path = "${mcm['basedir']}/${album_dirname}";
 
   $stream_base = "/_cache/stream/" . session_id() . "/" . md5($album_dirname);
@@ -45,7 +47,7 @@ function create_player($album_dirname) {
 
       $playlist .= "    <track>\n";
       $playlist .= "      <location>${stream_url}/${symlink}</location>\n";
-      $playlist .= "      <title>" . utf8_encode(substr(substr($mp3, 5), 0, -4)) . "</title>\n";
+      $playlist .= "      <title>" . htmlentities(substr(substr($mp3, 5), 0, -4), ENT_COMPAT, 'UTF-8') . "</title>\n";
       $playlist .= "      <image>${img}</image>\n";
       $playlist .= "    </track>\n";
      
@@ -59,18 +61,11 @@ function create_player($album_dirname) {
     fclose($hnd);
     
   }
+
+  chdir($cwd);
+
+  return $playlist_url;
   
-  $movie_url    = $mcm['url_path'] . '/web_player.swf';
-  $movie_params = 'file=' . $playlist_url . '&autostart=false&showdigits=false&overstretch=false&shuffle=false&repeat=list';
-
-?>
-<object type="application/x-shockwave-flash" width="200" height="220"
-  data="<?php echo $movie_url; ?>" flashvars="<?php echo $movie_params; ?>">
-  <param name="menu" value="false" />
-  <param name="movie" value="<?php echo $movie_url . '?' . $movie_params; ?>" />
-</object>
-<?php
-
 }
 
 ?>
