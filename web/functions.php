@@ -88,6 +88,11 @@ function mcm_web_print_table($args) {
   
   $items_list = mcm_action('lookup_itemlist', $params);
   $num_items  = mcm_action('lookup_itemlist_count', $params);
+
+  if ($num_items == 0) {
+    mcm_web_nothing_to_review();
+    return;
+  }
   
   
 ?>
@@ -262,6 +267,21 @@ function mcm_web_exit_without_saving() {
 
 }
 
+function mcm_web_nothing_to_review() {
+?>
+<div id="signoff" class="center">
+    <p class="bold">Nothing to process.</p>
+    <p>There are no items for you to select.</p>
+    <p>You can now close this window or return to the homepage.</p>
+    <div id="home-link"><a href="">Return to Homepage <img src="images/home.png" alt="Home" title="Return to Homepage"></a></div>
+</div>
+<?php
+
+  /* Completely wipe out the session */
+  $_SESSION = array();
+  session_destroy();
+
+}
 
 function print_checkbox($id, $value) {
 
