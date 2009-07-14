@@ -350,7 +350,7 @@ function mcm_create_cover_url($album_dirname) {
   
   chdir(dirname($cache_path));
   if (count($image))
-    symlink("${mcm['basedir']}/${album_dirname}/" . basename($image[0]), basename($cache_path));
+    symlink("${mcm['basedir']}/${album_dirname}/" . $image[0], basename($cache_path));
   else
     $cache_url = "${mcm['url_path']}/images/no-cover.png";
 
