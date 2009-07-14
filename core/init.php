@@ -41,6 +41,10 @@ function mcm_action($action, $params = '') {
       include_once('../web/functions.php');
       mcm_web_finish_selection();
       break;
+    case 'web_exit_without_saving':
+      include_once('../web/functions.php');
+      mcm_web_exit_without_saving();
+      break;
     case 'read_dirlist':
       include_once('../fs/dirlist.php');
       return mcm_read_dirlist();
