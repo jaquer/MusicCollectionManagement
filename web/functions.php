@@ -323,7 +323,7 @@ function print_navigation($start, $limit, $num_items, $direction) {
   }
 
   if ($direction == 'right') {
-    if ($start + $limit <= $num_items) {
+    if ($start + $limit < $num_items) {
 ?>
             <!-- input type="image" src="images/last.png" title="First Page" -->
             <input type="image" src="images/next.png" name="submit" value="next" title="Next Page">
