@@ -4,11 +4,11 @@
 #                  should be run periodically via cron
 
 BASE_DIR="/var/www/music"
-SIGNAL_FILE="${BASE_DIR}/_cache/update_signal"
-PROGRESS_FILE="${BASE_DIR}/_cache/update_in_progress"
+SIGNAL_FILE="${BASE_DIR}/web/_cache/update_signal"
+PROGRESS_FILE="${BASE_DIR}/web/_cache/update_in_progress"
 
 PHP="/usr/bin/php"
-SCRIPT="${BASE_DIR}/create_symlinks.php"
+SCRIPT="${BASE_DIR}/bin/create_symlinks.php"
 
 if [ -w ${SIGNAL_FILE} -a ! -f ${PROGRESS_FILE} ]; then
 
