@@ -118,6 +118,9 @@ function mcm_init() {
   $mcm['codepage']    = $codepage;
   
   $mcm['debug'] = $debug;
+
+  /* set include path */
+  ini_set('include_path', dirname(dirname(__FILE__)) . ':' . ini_get('include_path'));
   
   require_once('../db/mysql.php');
   mcm_open_db();
